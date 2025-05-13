@@ -35,7 +35,7 @@ std::tuple<Edge *, int, int, double> MSTSolver::primsAlgorithmForMatrix(int **ad
         parent[v] = -1;
     }
 
-    // Wybór początkowego wierzchołka i dodanie go do kopca
+    // Wybór początkowego wierzchołka i aktualizacja pozycji na kopcu
     key[0] = 0;
     heap.decreaseKey(0, 0);
 
@@ -46,7 +46,8 @@ std::tuple<Edge *, int, int, double> MSTSolver::primsAlgorithmForMatrix(int **ad
 
         // Dodatnie krawędzi do MST (jeśli nie jest to piewrszy wierzchołek(ma rodzica))
         if (parent[u] != -1) {
-            mstEdges[mstEdgeCount++] = {parent[u], u, adjacencyMatrix[parent[u]][u]};
+            mstEdges[mstEdgeCount] = {parent[u], u, adjacencyMatrix[parent[u]][u]};
+            mstEdgeCount++;
             mstWeight += adjacencyMatrix[parent[u]][u];
         }
 
@@ -106,7 +107,8 @@ std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour**
 
         // Dodatnie krawędzi do MST (jeśli nie jest to piewrszy(ma rodzica))
         if (parent[u] != -1) {
-            mstEdges[mstEdgeCount++] = {parent[u], u, key[u]};
+            mstEdges[mstEdgeCount] = {parent[u], u, key[u]};
+            mstEdgeCount++;
             mstWeight += key[u];
         }
 
@@ -271,8 +273,8 @@ int MSTSolver::extractEdgesFromMatrix(int** adjacencyMatrix, int verticesNumber,
 
 //funkcja sortująca listę krawędzi wg wagi krawędzi
 void MSTSolver::sortEdgesByWeight(Edge* edges, int edgeCount) {
-    for (int i = 0; i < edgeCount - 1; ++i) {
-        for (int j = 0; j < edgeCount - i - 1; ++j) {
+    for (int i = 0; i < edgeCount - 1; i++) {
+        for (int j = 0; j < edgeCount - i - 1; j++) {
             if (edges[j].weight > edges[j + 1].weight) {
                 Edge temp = edges[j];
                 edges[j] = edges[j + 1];

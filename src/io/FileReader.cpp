@@ -38,7 +38,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
     neighboursNumberList = new int [verticesNumber];
     adjacencyMatrix = new int*[verticesNumber];
 
-
+    // Inicjalizacja macierzy i listy
     for (int i = 0; i < verticesNumber; i++) {
         adjacencyMatrix[i] = new int[verticesNumber];
         for (int j = 0; j < verticesNumber; j++) {
@@ -54,11 +54,11 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
         std::stringstream ss(line);
         ss >> vertex1 >> vertex2 >> weight;
 
-        //umieszczenie wagi na krawędzi
+        // Umieszczenie wagi na krawędzi
         adjacencyMatrix[vertex1][vertex2] = weight;
         adjacencyMatrix[vertex2][vertex1] = weight;
 
-        //dodanie sąsiadów do listy sąsiedztwa poprzez alokację pamięci
+        // Dodanie sąsiadów do listy sąsiedztwa poprzez alokację pamięci
         neighboursNumberList[vertex1] +=1;
         auto* newNeighboursList = new neighbour[neighboursNumberList[vertex1]];
         for (int j=0; j<neighboursNumberList[vertex1]-1; j++) {
@@ -73,7 +73,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
         neighboursList[vertex1][neighboursNumberList[vertex1]-1].vertex = vertex2;
         neighboursList[vertex1][neighboursNumberList[vertex1]-1].weight = weight;
 
-        //drugi wierzchołek
+        // Drugi wierzchołek bo krawędzie nieskierowane
         neighboursNumberList[vertex2] +=1;
         newNeighboursList = new neighbour[neighboursNumberList[vertex2]];
         for (int j=0; j<neighboursNumberList[vertex2]-1; j++) {
