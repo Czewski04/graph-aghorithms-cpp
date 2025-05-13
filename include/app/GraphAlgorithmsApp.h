@@ -4,6 +4,7 @@
 
 #ifndef GRAPHALGORITHMSAPP_H
 #define GRAPHALGORITHMSAPP_H
+#include "EdgeStruct.h"
 #include "NeighbourStruct.h"
 
 
@@ -18,9 +19,16 @@ private:
         int verticesNumber = 0;
         int edgesNumber = 0;
 
+        double operationTime =0.0;
+        int MSTWeight = 0;
+        int MSTEdgesCount = 0;
+        Edge* MSTEdgesList = nullptr;
+
+
         static int getUserChoice();
         void showNeighboursList();
         void showAdjacencyList();
+        void showMSTResults();
 
         static void showMenu();
         static void showMSTMenu();

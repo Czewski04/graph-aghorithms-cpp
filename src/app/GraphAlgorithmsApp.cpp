@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "FileReader.h"
+#include "MSTSolver.h"
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
     showMenu();
@@ -18,12 +19,32 @@
                 switch (getUserChoice()) {
                     case 1:
                         FileReader::readFile(adjacencyMatrix, neighboursList, neighboursNumberList, verticesNumber, edgesNumber);
+                        showAdjacencyList();
+                        showNeighboursList();
                         break;
                     case 2:
                         ;
                     case 3:
                         showAdjacencyList();
                         showNeighboursList();
+                        break;
+                    case 4:
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
+                        std::cout<<"Matrix: \n";
+                        showMSTResults();
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForList(neighboursList, neighboursNumberList, verticesNumber);
+                        std::cout<<"List: \n";
+                        showMSTResults();
+                        std::cout<<" ";
+                        break;
+                    case 5:
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
+                        std::cout<<"Matrix: \n";
+                        showMSTResults();
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForList(neighboursList, neighboursNumberList, verticesNumber);
+                        std::cout<<"List: \n";
+                        showMSTResults();
+                        std::cout<<" ";
                         break;
                     default: ;
                 }
@@ -110,4 +131,13 @@ void GraphAlgorithmsApp::showMaxFlowMenu() {
         "3. Show graph.\n"
         "4. DFS Ford-Fulkerson algorithm\n"
         "5. BFS Ford-Fulkerson algorithm\n";
+}
+
+void GraphAlgorithmsApp::showMSTResults() {
+    for (int i = 0; i < MSTEdgesCount; ++i) {
+        std::cout<<MSTEdgesList[i].u<<" -- "<<MSTEdgesList[i].v<<"  |weight: "<<MSTEdgesList[i].weight<<"\n";
+    }
+    std::cout<<"Summary MST weight: "<<MSTWeight<<"\n";
+    std::cout<<"Operation Time: "<<operationTime<<"\n";
+    std::cout<<"\n\n";
 }
