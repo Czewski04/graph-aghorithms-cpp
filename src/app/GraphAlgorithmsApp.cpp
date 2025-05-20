@@ -78,23 +78,20 @@ void GraphAlgorithmsApp::showNeighboursList() {
 }
 
 void GraphAlgorithmsApp::showAdjacencyList() {
-    // Nagłówki kolumn
-    std::cout << "   "; // Dwa spacje na wyrównanie z nagłówkami wierszy
+    std::cout << "   ";
     for (int i = 0; i < verticesNumber; ++i) {
         std::cout << std::setw(4) << i << " ";
     }
     std::cout << "\n";
 
-    // Linia oddzielająca nagłówki od zawartości
     std::cout << "----";
     for (int i = 0; i < verticesNumber; ++i) {
         std::cout << "-----";
     }
     std::cout << "\n";
 
-    // Zawartość macierzy z nagłówkami wierszy
     for (int i = 0; i < verticesNumber; ++i) {
-        std::cout << std::setw(2) << i << "|"; // Nagłówek wiersza
+        std::cout << std::setw(2) << i << "|";
         for (int j = 0; j < verticesNumber; ++j) {
             std::cout << std::setw(4) << adjacencyMatrix[i][j] << " ";
         }
