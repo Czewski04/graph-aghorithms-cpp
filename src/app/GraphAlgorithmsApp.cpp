@@ -18,7 +18,7 @@
                 showMSTMenu();
                 switch (getUserChoice()) {
                     case 1:
-                        FileReader::readFile(adjacencyMatrix, neighboursList, neighboursNumberList, verticesNumber, edgesNumber);
+                        FileReader::readFile(adjacencyMatrix, neighboursList, neighboursNumberList, verticesNumber, edgesNumber, startVertice, endVertice);
                         showAdjacencyList();
                         showNeighboursList();
                         break;

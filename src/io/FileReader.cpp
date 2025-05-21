@@ -16,7 +16,7 @@ std::string FileReader::askForFileName() {
     return fileName;
 }
 
-void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int *&neighboursNumberList, int &verticesNumber, int &edgesNumber) {
+void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int *&neighboursNumberList, int &verticesNumber, int &edgesNumber, int& startVertice, int& endVertice) {
     for (int i = 0; i < verticesNumber; i++) {
         delete[] neighboursList[i];
         delete[] adjacencyMatrix[i];
@@ -33,7 +33,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
     std::string line;
     getline(file, line);
     std::stringstream ss(line);
-    ss >> edgesNumber>> verticesNumber;
+    ss >> edgesNumber >> verticesNumber >> startVertice >> endVertice;
     neighboursList = new neighbour*[verticesNumber];
     neighboursNumberList = new int [verticesNumber];
     adjacencyMatrix = new int*[verticesNumber];
@@ -56,7 +56,6 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
 
         // Umieszczenie wagi na krawędzi
         adjacencyMatrix[vertex1][vertex2] = weight;
-        adjacencyMatrix[vertex2][vertex1] = weight;
 
         // Dodanie sąsiadów do listy sąsiedztwa poprzez alokację pamięci
         neighboursNumberList[vertex1] +=1;
@@ -73,19 +72,22 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
         neighboursList[vertex1][neighboursNumberList[vertex1]-1].vertex = vertex2;
         neighboursList[vertex1][neighboursNumberList[vertex1]-1].weight = weight;
 
-        // Drugi wierzchołek bo krawędzie nieskierowane
-        neighboursNumberList[vertex2] +=1;
-        newNeighboursList = new neighbour[neighboursNumberList[vertex2]];
-        for (int j=0; j<neighboursNumberList[vertex2]-1; j++) {
-            newNeighboursList[j] = neighboursList[vertex2][j];
+        if (startVertice < 0) {
+            adjacencyMatrix[vertex2][vertex1] = weight;
+            // Drugi wierzchołek bo krawędzie nieskierowane
+            neighboursNumberList[vertex2] +=1;
+            newNeighboursList = new neighbour[neighboursNumberList[vertex2]];
+            for (int j=0; j<neighboursNumberList[vertex2]-1; j++) {
+                newNeighboursList[j] = neighboursList[vertex2][j];
+            }
+            delete[] neighboursList[vertex2];
+            neighboursList[vertex2] = new neighbour[neighboursNumberList[vertex2]];
+            for (int j=0; j<neighboursNumberList[vertex2]-1; j++) {
+                neighboursList[vertex2][j] = newNeighboursList[j];
+            }
+            delete[] newNeighboursList;
+            neighboursList[vertex2][neighboursNumberList[vertex2]-1].vertex = vertex1;
+            neighboursList[vertex2][neighboursNumberList[vertex2]-1].weight = weight;
         }
-        delete[] neighboursList[vertex2];
-        neighboursList[vertex2] = new neighbour[neighboursNumberList[vertex2]];
-        for (int j=0; j<neighboursNumberList[vertex2]-1; j++) {
-            neighboursList[vertex2][j] = newNeighboursList[j];
-        }
-        delete[] newNeighboursList;
-        neighboursList[vertex2][neighboursNumberList[vertex2]-1].vertex = vertex1;
-        neighboursList[vertex2][neighboursNumberList[vertex2]-1].weight = weight;
     }
 }

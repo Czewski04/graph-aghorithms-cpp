@@ -18,6 +18,8 @@ private:
         int* neighboursNumberList = nullptr;
         int verticesNumber = 0;
         int edgesNumber = 0;
+        int startVertice = -1;
+        int endVertice = -1;
 
         double operationTime =0.0;
         int MSTWeight = 0;
