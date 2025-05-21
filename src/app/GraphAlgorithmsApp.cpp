@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "MaximumFlowSolver.h"
+#include "../../include/algorithms/MaximumFlowSolver.h"
 
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
@@ -101,20 +101,20 @@
                         showNeighboursList();
                         break;
                     case 4:
-                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
                         std::cout<<"Matrix: \n";
                         showMaxFlowResult();
-                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
                         std::cout<<"List: \n";
                         showMaxFlowResult();
                         break;
                     case 5:
-                        // std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
-                        // std::cout<<"Matrix: \n";
-                        // showShortestPathsResult();
-                        // std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForList(neighboursList, verticesNumber, startVertex);
-                        // std::cout<<"List: \n";
-                        // showShortestPathsResult();
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
+                        std::cout<<"Matrix: \n";
+                        showMaxFlowResult();
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
+                        std::cout<<"List: \n";
+                        showMaxFlowResult();
                         break;
                     default: ;
                 }
