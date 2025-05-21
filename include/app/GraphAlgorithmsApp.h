@@ -15,7 +15,6 @@ private:
         double lastOperationTime = 0;
         neighbour** neighboursList = nullptr;
         int** adjacencyMatrix = nullptr;
-        int* neighboursNumberList = nullptr;
         int verticesNumber = 0;
         int edgesNumber = 0;
         int startVertice = -1;

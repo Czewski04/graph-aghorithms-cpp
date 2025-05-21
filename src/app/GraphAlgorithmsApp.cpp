@@ -3,12 +3,11 @@
 //
 
 #include "GraphAlgorithmsApp.h"
+#include "FileReader.h"
+#include "MSTSolver.h"
 
 #include <iomanip>
 #include <iostream>
-
-#include "FileReader.h"
-#include "MSTSolver.h"
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
     showMenu();
@@ -18,7 +17,7 @@
                 showMSTMenu();
                 switch (getUserChoice()) {
                     case 1:
-                        FileReader::readFile(adjacencyMatrix, neighboursList, neighboursNumberList, verticesNumber, edgesNumber, startVertice, endVertice);
+                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertice, endVertice);
                         showAdjacencyList();
                         showNeighboursList();
                         break;
@@ -32,7 +31,7 @@
                         std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
                         std::cout<<"Matrix: \n";
                         showMSTResults();
-                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForList(neighboursList, neighboursNumberList, verticesNumber);
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForList(neighboursList, verticesNumber);
                         std::cout<<"List: \n";
                         showMSTResults();
                         std::cout<<" ";
@@ -41,7 +40,7 @@
                         std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
                         std::cout<<"Matrix: \n";
                         showMSTResults();
-                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForList(neighboursList, neighboursNumberList, verticesNumber);
+                        std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForList(neighboursList, verticesNumber);
                         std::cout<<"List: \n";
                         showMSTResults();
                         std::cout<<" ";
@@ -69,8 +68,10 @@ int GraphAlgorithmsApp::getUserChoice() {
 void GraphAlgorithmsApp::showNeighboursList() {
     for (int i=0; i<verticesNumber; i++) {
         std::cout<<i<<". ";
-        for (int j=0; j<neighboursNumberList[i]; j++) {
-            std::cout<<"("<<neighboursList[i][j].vertex<<", "<<neighboursList[i][j].weight<<") ";
+        neighbour* current = neighboursList[i];
+        while (current!=nullptr) {
+            std::cout<<"("<<current -> vertex<<", "<<current -> weight<<") ";
+            current = current -> nextVertex;
         }
         std::cout<<"\n";
     }

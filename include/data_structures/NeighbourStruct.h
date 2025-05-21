@@ -8,5 +8,6 @@
 struct neighbour {
     int vertex;
     int weight;
+    neighbour* nextVertex;
 };
 #endif //NEIGHBOURSTRUCT_H

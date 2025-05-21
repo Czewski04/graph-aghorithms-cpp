@@ -72,7 +72,7 @@ std::tuple<Edge *, int, int, double> MSTSolver::primsAlgorithmForMatrix(int **ad
 }
 
 // Algorytm Prima dla listy sąsiedztwa
-std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour** neighboursList, int* neighboursNumberList, int verticesNumber) {
+std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour** neighboursList, int verticesNumber) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Tablica reprezentująca rodziców w MST
@@ -113,9 +113,10 @@ std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour**
         }
 
         // Sprawdzenie sąsiadów wierzchołka
-        for (int i = 0; i < neighboursNumberList[u]; i++) {
-            int v = neighboursList[u][i].vertex;
-            int weight = neighboursList[u][i].weight;
+        neighbour* current = neighboursList[u];
+        while (current!=nullptr) {
+            int v = current->vertex;
+            int weight = current->weight;
 
             // Jeśli sąsiad nie jest jeszce w MST i waga krawędzi jest mniejsza niż aktualnie znana najmniejsza to następuje aktualizacja informacji
             if (heap.isInHeap(v) && weight < key[v]) {
@@ -123,6 +124,7 @@ std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour**
                 parent[v] = u;
                 heap.decreaseKey(v, weight);
             }
+            current = current -> nextVertex;
         }
     }
 
@@ -136,12 +138,12 @@ std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour**
 }
 
 // Algorytm Kruskala dla listy sąsiedztwa
-std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForList(neighbour **neighboursList, int *neighboursNumberList, int verticesNumber) {
+std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForList(neighbour **neighboursList, int verticesNumber) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Przygotowanie listy krawędzi
     Edge* edges;
-    int edgeCount = extractEdgesFromNeighboursList(neighboursList, neighboursNumberList, verticesNumber, edges);
+    int edgeCount = extractEdgesFromNeighboursList(neighboursList, verticesNumber, edges);
     sortEdgesByWeight(edges, 0, edgeCount);
 
     // Inicjalizacja MST
@@ -208,33 +210,37 @@ std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForMatrix(int *
 }
 
 // Przekształcenie listy sąsiedztwa w listę krawędzi
-int MSTSolver::extractEdgesFromNeighboursList(neighbour** neighboursList, int* neighboursNumberList, int verticesNumber, Edge*& edgesOut
+int MSTSolver::extractEdgesFromNeighboursList(neighbour** neighboursList, int verticesNumber, Edge*& edgesOut
 ) {
     int estimatedEdges = 0;
 
-    // Zliczanie krawędzi tylko raz dla każdej pary (u, v)
     for (int u = 0; u < verticesNumber; u++) {
-        for (int i = 0; i < neighboursNumberList[u]; i++) {
-            int v = neighboursList[u][i].vertex;
+        neighbour* current = neighboursList[u];
+        while (current!=nullptr) {
+            int v = current -> vertex;
             if (u < v) {
                 estimatedEdges++;
             }
+            current = current -> nextVertex;
         }
     }
+
 
     //alokacja tablicy krawędzi
     edgesOut = new Edge[estimatedEdges];
     int edgeIndex = 0;
 
-    //umieszczenie krawędzi na liście
+
     for (int u = 0; u < verticesNumber; u++) {
-        for (int i = 0; i < neighboursNumberList[u]; i++) {
-            int v = neighboursList[u][i].vertex;
-            int w = neighboursList[u][i].weight;
+        neighbour* current = neighboursList[u];
+        while (current!=nullptr) {
+            int v = current -> vertex;
+            int w = current -> weight;
             if (u < v) {
                 edgesOut[edgeIndex] = {u, v, w};
                 edgeIndex++;
             }
+            current = current -> nextVertex;
         }
     }
 
