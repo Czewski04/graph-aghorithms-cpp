@@ -29,11 +29,14 @@ private:
         neighbour** shortestPathsList = nullptr;
         int* shortestPathsDistances = nullptr;
 
+        int maxFlow = 0;
+
         static int getUserChoice();
         void showNeighboursList();
         void showAdjacencyMatrix();
         void showMSTResults();
         void showShortestPathsResult();
+        void showMaxFlowResult();
 
         static void showMenu();
         static void showMSTMenu();

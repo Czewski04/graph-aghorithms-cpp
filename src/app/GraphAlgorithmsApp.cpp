@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "MaximumFlowSolver.h"
 
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
@@ -85,7 +86,39 @@
             }
             break;
         case 3:
-            showMaxFlowMenu();
+            while (true) {
+                showMaxFlowMenu();
+                switch (getUserChoice()) {
+                    case 1:
+                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
+                        showAdjacencyMatrix();
+                        showNeighboursList();
+                        break;
+                    case 2:
+                        ;
+                    case 3:
+                        showAdjacencyMatrix();
+                        showNeighboursList();
+                        break;
+                    case 4:
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
+                        std::cout<<"Matrix: \n";
+                        showMaxFlowResult();
+                        std::tie(maxFlow, operationTime) = MaximumFlowSolver::fordFulkersonAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
+                        std::cout<<"List: \n";
+                        showMaxFlowResult();
+                        break;
+                    case 5:
+                        // std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
+                        // std::cout<<"Matrix: \n";
+                        // showShortestPathsResult();
+                        // std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForList(neighboursList, verticesNumber, startVertex);
+                        // std::cout<<"List: \n";
+                        // showShortestPathsResult();
+                        break;
+                    default: ;
+                }
+            }
             break;
         default: ;
     }
@@ -182,6 +215,12 @@ void GraphAlgorithmsApp::showShortestPathsResult() {
         std::cout<<"  total distance: "<<shortestPathsDistances[i];
         std::cout<<"\n";
     }
+    std::cout<<"Operation Time: "<<operationTime<<"\n";
+    std::cout<<"\n\n";
+}
+
+void GraphAlgorithmsApp::showMaxFlowResult() {
+    std::cout<<"Maximum graph flow from "<<startVertex<<"to "<<endVertex<<": "<<maxFlow<<"\n";
     std::cout<<"Operation Time: "<<operationTime<<"\n";
     std::cout<<"\n\n";
 }
