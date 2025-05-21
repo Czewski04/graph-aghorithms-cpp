@@ -12,10 +12,10 @@
 
 class ShortestPathSolver {
 public:
-    static std::tuple<Edge*, int, int, double> dijkstrasAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber);
-    static std::tuple<Edge*, int, int, double> dijkstrasAlgorithmForList(neighbour** neighboursList, int* neighboursNumberList, int verticesNumber);
-    static std::tuple<Edge*, int, int, double> bellmanFordAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber);
-    static std::tuple<Edge*, int, int, double> bellmanFordAlgorithmForList(neighbour** neighboursList, int* neighboursNumberList, int verticesNumber);
+    static std::tuple<neighbour**, int*, double> dijkstrasAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertice);
+    static std::tuple<neighbour**, int*, double> dijkstrasAlgorithmForList(neighbour** neighboursList, int verticesNumber, int startVertice);
+    static std::tuple<neighbour**, int*, double> bellmanFordAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertice);
+    static std::tuple<neighbour**, int*, double> bellmanFordAlgorithmForList(neighbour** neighboursList, int verticesNumber, int startVertice);
 };
 
 

@@ -21,15 +21,19 @@ private:
         int endVertice = -1;
 
         double operationTime =0.0;
+
         int MSTWeight = 0;
         int MSTEdgesCount = 0;
         Edge* MSTEdgesList = nullptr;
 
+        neighbour** shortestPathsList = nullptr;
+        int* shortestPathsDistances = nullptr;
 
         static int getUserChoice();
         void showNeighboursList();
-        void showAdjacencyList();
+        void showAdjacencyMatrix();
         void showMSTResults();
+        void showShortestPathsResult();
 
         static void showMenu();
         static void showMSTMenu();

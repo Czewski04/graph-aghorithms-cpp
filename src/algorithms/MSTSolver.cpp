@@ -3,12 +3,10 @@
 //
 
 #include "MSTSolver.h"
-
-#include <chrono>
-#include <climits>
-
 #include "UnionFind.h"
 #include "MinimumHeap.h"
+#include <chrono>
+#include <climits>
 
 // Algorytm Prima dla macierzy sąsiedztwa
 std::tuple<Edge *, int, int, double> MSTSolver::primsAlgorithmForMatrix(int **adjacencyMatrix, int verticesNumber) {
@@ -122,7 +120,7 @@ std::tuple<Edge*, int, int, double> MSTSolver::primsAlgorithmForList(neighbour**
             if (heap.isInHeap(v) && weight < key[v]) {
                 key[v] = weight;
                 parent[v] = u;
-                heap.decreaseKey(v, weight);
+                heap.decreaseKey(v, key[v]);
             }
             current = current -> nextVertex;
         }

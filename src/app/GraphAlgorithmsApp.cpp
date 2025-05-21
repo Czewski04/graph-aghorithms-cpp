@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "ShortestPathSolver.h"
+
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
     showMenu();
     switch (getUserChoice()) {
@@ -18,13 +20,13 @@
                 switch (getUserChoice()) {
                     case 1:
                         FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertice, endVertice);
-                        showAdjacencyList();
+                        showAdjacencyMatrix();
                         showNeighboursList();
                         break;
                     case 2:
                         ;
                     case 3:
-                        showAdjacencyList();
+                        showAdjacencyMatrix();
                         showNeighboursList();
                         break;
                     case 4:
@@ -34,7 +36,6 @@
                         std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::primsAlgorithmForList(neighboursList, verticesNumber);
                         std::cout<<"List: \n";
                         showMSTResults();
-                        std::cout<<" ";
                         break;
                     case 5:
                         std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
@@ -43,14 +44,45 @@
                         std::tie(MSTEdgesList, MSTEdgesCount, MSTWeight, operationTime) = MSTSolver::kruskalsAlgorithmForList(neighboursList, verticesNumber);
                         std::cout<<"List: \n";
                         showMSTResults();
-                        std::cout<<" ";
                         break;
                     default: ;
                 }
             }
             break;
         case 2:
-            showShortestPathMenu();
+            while (true) {
+                showShortestPathMenu();
+                switch (getUserChoice()) {
+                    case 1:
+                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertice, endVertice);
+                        showAdjacencyMatrix();
+                        showNeighboursList();
+                        break;
+                    case 2:
+                        ;
+                    case 3:
+                        showAdjacencyMatrix();
+                        showNeighboursList();
+                        break;
+                    case 4:
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::cout<<"Matrix: \n";
+                        showShortestPathsResult();
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForList(neighboursList, verticesNumber, startVertice);
+                        std::cout<<"List: \n";
+                        showShortestPathsResult();
+                        break;
+                    case 5:
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::cout<<"Matrix: \n";
+                        showShortestPathsResult();
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::cout<<"List: \n";
+                        showShortestPathsResult();
+                        break;
+                    default: ;
+                }
+            }
             break;
         case 3:
             showMaxFlowMenu();
@@ -78,7 +110,7 @@ void GraphAlgorithmsApp::showNeighboursList() {
     std::cout<<"\n";
 }
 
-void GraphAlgorithmsApp::showAdjacencyList() {
+void GraphAlgorithmsApp::showAdjacencyMatrix() {
     std::cout << "   ";
     for (int i = 0; i < verticesNumber; ++i) {
         std::cout << std::setw(4) << i << " ";
@@ -136,6 +168,20 @@ void GraphAlgorithmsApp::showMSTResults() {
         std::cout<<MSTEdgesList[i].u<<" -- "<<MSTEdgesList[i].v<<"  |weight: "<<MSTEdgesList[i].weight<<"\n";
     }
     std::cout<<"Summary MST weight: "<<MSTWeight<<"\n";
+    std::cout<<"Operation Time: "<<operationTime<<"\n";
+    std::cout<<"\n\n";
+}
+
+void GraphAlgorithmsApp::showShortestPathsResult() {
+    for (int i=0; i<verticesNumber; i++) {
+        neighbour* current = shortestPathsList[i];
+        while (current!=nullptr) {
+            std::cout<<" -> "<<current -> vertex;
+            current = current -> nextVertex;
+        }
+        std::cout<<"  -total distance: "<<shortestPathsDistances[i];
+        std::cout<<"\n";
+    }
     std::cout<<"Operation Time: "<<operationTime<<"\n";
     std::cout<<"\n\n";
 }
