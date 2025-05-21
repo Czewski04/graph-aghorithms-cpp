@@ -5,11 +5,11 @@
 #include "GraphAlgorithmsApp.h"
 #include "FileReader.h"
 #include "MSTSolver.h"
-
+#include "ShortestPathSolver.h"
 #include <iomanip>
 #include <iostream>
 
-#include "ShortestPathSolver.h"
+
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
     showMenu();
@@ -19,7 +19,7 @@
                 showMSTMenu();
                 switch (getUserChoice()) {
                     case 1:
-                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertice, endVertice);
+                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
                         showAdjacencyMatrix();
                         showNeighboursList();
                         break;
@@ -54,7 +54,7 @@
                 showShortestPathMenu();
                 switch (getUserChoice()) {
                     case 1:
-                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertice, endVertice);
+                        FileReader::readFile(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
                         showAdjacencyMatrix();
                         showNeighboursList();
                         break;
@@ -65,18 +65,18 @@
                         showNeighboursList();
                         break;
                     case 4:
-                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
                         std::cout<<"Matrix: \n";
                         showShortestPathsResult();
-                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForList(neighboursList, verticesNumber, startVertice);
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForList(neighboursList, verticesNumber, startVertex);
                         std::cout<<"List: \n";
                         showShortestPathsResult();
                         break;
                     case 5:
-                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
                         std::cout<<"Matrix: \n";
                         showShortestPathsResult();
-                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertice);
+                        std::tie(shortestPathsList, shortestPathsDistances, operationTime) = ShortestPathSolver::bellmanFordAlgorithmForList(neighboursList, verticesNumber, startVertex);
                         std::cout<<"List: \n";
                         showShortestPathsResult();
                         break;
@@ -176,10 +176,10 @@ void GraphAlgorithmsApp::showShortestPathsResult() {
     for (int i=0; i<verticesNumber; i++) {
         neighbour* current = shortestPathsList[i];
         while (current!=nullptr) {
-            std::cout<<" -> "<<current -> vertex;
+            std::cout<<current -> vertex<<" -> ";
             current = current -> nextVertex;
         }
-        std::cout<<"  -total distance: "<<shortestPathsDistances[i];
+        std::cout<<"  total distance: "<<shortestPathsDistances[i];
         std::cout<<"\n";
     }
     std::cout<<"Operation Time: "<<operationTime<<"\n";

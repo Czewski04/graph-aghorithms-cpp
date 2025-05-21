@@ -17,8 +17,8 @@ private:
         int** adjacencyMatrix = nullptr;
         int verticesNumber = 0;
         int edgesNumber = 0;
-        int startVertice = -1;
-        int endVertice = -1;
+        int startVertex = -1;
+        int endVertex = -1;
 
         double operationTime =0.0;
 

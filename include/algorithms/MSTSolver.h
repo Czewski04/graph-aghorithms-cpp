@@ -4,11 +4,9 @@
 
 #ifndef MSTSOLVER_H
 #define MSTSOLVER_H
-
-#include <tuple>
-
 #include "EdgeStruct.h"
 #include "NeighbourStruct.h"
+#include <tuple>
 
 class MSTSolver {
 public:
