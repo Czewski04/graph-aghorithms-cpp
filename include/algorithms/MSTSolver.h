@@ -19,8 +19,9 @@ class MSTSolver {
 
 private:
    static int extractEdgesFromNeighboursList(neighbour** neighboursList, int* neighboursNumberList, int verticesNumber, Edge*& edgesOut);
-   static void sortEdgesByWeight(Edge* edges, int edgeCount);
+   static void sortEdgesByWeight(Edge* edges, int begin, int end);
    static int extractEdgesFromMatrix(int** adjacencyMatrix, int verticesNumber, Edge*& edgesOut);
+   static void swapEdges(Edge* edges, int i, int j);
 };
 
 #endif //MSTSOLVER_H

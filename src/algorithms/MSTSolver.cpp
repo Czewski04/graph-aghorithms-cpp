@@ -142,7 +142,7 @@ std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForList(neighbo
     // Przygotowanie listy krawędzi
     Edge* edges;
     int edgeCount = extractEdgesFromNeighboursList(neighboursList, neighboursNumberList, verticesNumber, edges);
-    sortEdgesByWeight(edges, edgeCount);
+    sortEdgesByWeight(edges, 0, edgeCount);
 
     // Inicjalizacja MST
     UnionFind unionFind(verticesNumber);
@@ -178,7 +178,7 @@ std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForMatrix(int *
     // Przygotowanie listy krawędzi
     Edge* edges;
     int edgeCount = extractEdgesFromMatrix(adjacencyMatrix, verticesNumber, edges);
-    sortEdgesByWeight(edges, edgeCount);
+    sortEdgesByWeight(edges, 0, edgeCount-1);
 
     // Inicjalizacja MST
     UnionFind unionFind(verticesNumber);
@@ -272,17 +272,43 @@ int MSTSolver::extractEdgesFromMatrix(int** adjacencyMatrix, int verticesNumber,
 }
 
 //funkcja sortująca listę krawędzi wg wagi krawędzi
-void MSTSolver::sortEdgesByWeight(Edge* edges, int edgeCount) {
-    for (int i = 0; i < edgeCount - 1; i++) {
-        for (int j = 0; j < edgeCount - i - 1; j++) {
-            if (edges[j].weight > edges[j + 1].weight) {
-                Edge temp = edges[j];
-                edges[j] = edges[j + 1];
-                edges[j + 1] = temp;
-            }
+void MSTSolver::sortEdgesByWeight(Edge* edges, int begin, int end) {
+    if (begin >= end) return;
+
+    Edge pivot = edges[((end - begin) / 2) + begin];    //wybór środkowego pivota
+    swapEdges(edges, ((end-begin)/2)+begin, end);
+
+    int left = begin;
+    int right = end-1;
+
+    while (left <= right) {
+        while (left <= right && edges[left].weight < pivot.weight) {
+            left++;
+        }
+        while (left <= right && edges[right].weight > pivot.weight) {
+            right--;
+        }
+        if (left <= right) {
+            swapEdges(edges, left, right);
+            left++;
+            right--;
         }
     }
+
+    swapEdges(edges,left,end); // zamiana miejsc pivota
+
+    sortEdgesByWeight(edges, begin, left-1); // lewa podtablica
+    sortEdgesByWeight(edges, left+1, end); // prawa podtablica
+
 }
+
+void MSTSolver::swapEdges(Edge* edges, int i, int j) {
+    Edge tmp = edges[i];
+    edges[i] = edges[j];
+    edges[j] = tmp;
+}
+
+
 
 
 
