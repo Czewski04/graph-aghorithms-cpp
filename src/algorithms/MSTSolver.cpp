@@ -311,10 +311,3 @@ void MSTSolver::swapEdges(Edge* edges, int i, int j) {
     edges[i] = edges[j];
     edges[j] = tmp;
 }
-
-
-
-
-
-
-

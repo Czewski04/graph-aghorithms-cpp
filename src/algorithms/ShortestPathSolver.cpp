@@ -223,5 +223,3 @@ void ShortestPathSolver::buildPathsList(int verticesNumber, int *parent, neighbo
         }
     }
 }
-
-
