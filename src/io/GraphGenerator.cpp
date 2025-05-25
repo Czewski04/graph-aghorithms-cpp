@@ -10,7 +10,7 @@
 void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber) {
     int graphDensity = 0;
     std::tie(verticesNumber, graphDensity) = askForGraphSize();
-    int maxEdgesCount = (int)((verticesNumber * (verticesNumber-1)/2)*(graphDensity/100.0));
+    int maxEdgesCount = (int)(((double)verticesNumber * (verticesNumber-1)/2.0)*(graphDensity/100.0));
     edgesNumber = maxEdgesCount;
 
     // Inicjalizacja macierzy i listy
@@ -75,10 +75,10 @@ void GraphGenerator::addVerticeToNeighbourList(neighbour **&neighboursList, int 
 
 std::tuple<int, int> GraphGenerator::askForGraphSize() {
     int size = 0, density = 0;
-    std::cout<<"Podaj ilość wierzchołków grafu: "<<"\n";
+    std::cout<<"Enter the number of vertices in the graph: "<<"\n";
     std::cin>>size;
     while(density<20){
-        std::cout<<"Podaj gęstość grafu w % (>=20%)"<<"\n";
+        std::cout<<"Enter the percentage of graph density: (should be: >=20%)"<<"\n";
         std::cin>>density;
     }
     return std::make_tuple(size, density);

@@ -18,4 +18,5 @@ add_executable(graphAlgorithms
         src/data_structures/MinimumHeap.cpp
         src/data_structures/UnionFind.cpp
         src/io/GraphGenerator.cpp
+        src/io/FileCreator.cpp
 )

@@ -10,7 +10,7 @@
 
 class GraphAlgorithmsApp {
 public:
-        [[noreturn]]void runApp();
+    [[noreturn]] void runApp();
 private:
         double lastOperationTime = 0;
         neighbour** neighboursList = nullptr;
@@ -36,7 +36,7 @@ private:
         void showAdjacencyMatrix();
         void showMSTResults();
         void showShortestPathsResult();
-        void showMaxFlowResult();
+        void showMaxFlowResult() const;
 
         static void showMenu();
         static void showMSTMenu();

@@ -105,7 +105,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
     auto start = std::chrono::high_resolution_clock::now();
 
     // Tworzymy graf rezydualny
-    neighbour** residualGraph = new neighbour*[verticesNumber];
+    auto** residualGraph = new neighbour*[verticesNumber];
     for (int i = 0; i < verticesNumber; ++i)
         residualGraph[i] = nullptr;
 
@@ -122,7 +122,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
 
     int* parent = new int[verticesNumber];
     bool* visited = new bool[verticesNumber];
-    neighbour** pathEdges = new neighbour*[verticesNumber];
+    auto** pathEdges = new neighbour*[verticesNumber];
 
     int maxFlow = 0;
 
@@ -284,12 +284,12 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
     auto start = std::chrono::high_resolution_clock::now();
 
     // Tworzymy graf rezydualny
-    neighbour** residualGraph = new neighbour*[verticesNumber];
-    for (int i = 0; i < verticesNumber; ++i)
+    auto** residualGraph = new neighbour*[verticesNumber];
+    for (int i = 0; i < verticesNumber; i++)
         residualGraph[i] = nullptr;
 
     // Dodajemy krawędzie rezydualne z reverseEdge
-    for (int u = 0; u < verticesNumber; ++u) {
+    for (int u = 0; u < verticesNumber; u++) {
         neighbour* currentOriginal = neighboursList[u];
         while (currentOriginal != nullptr) {
             int v = currentOriginal->vertex;
@@ -301,7 +301,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
 
     int* parent = new int[verticesNumber];
     bool* visited = new bool[verticesNumber];
-    neighbour** pathEdges = new neighbour*[verticesNumber];
+    auto** pathEdges = new neighbour*[verticesNumber];
 
     int maxFlow = 0;
 
@@ -347,8 +347,8 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
 
 void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity) {
     // Tworzymy krawędzie resztkowe w obie strony
-    neighbour* forward = new neighbour{v, capacity, headU, nullptr};
-    neighbour* backward = new neighbour{u, 0, headV, nullptr};
+    auto* forward = new neighbour{v, capacity, headU, nullptr};
+    auto* backward = new neighbour{u, 0, headV, nullptr};
 
     // Łączymy je wzajemnie
     forward->reverseEdge = backward;

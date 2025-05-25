@@ -8,6 +8,7 @@
 #include "ShortestPathSolver.h"
 #include "MaximumFlowSolver.h"
 #include "GraphGenerator.h"
+#include "FileCreator.h"
 #include <iomanip>
 #include <iostream>
 
@@ -51,7 +52,6 @@
                     default: ;
                 }
             }
-            break;
         case 2:
             while (true) {
                 showShortestPathMenu();
@@ -88,7 +88,6 @@
                     default: ;
                 }
             }
-            break;
         case 3:
             while (true) {
                 showMaxFlowMenu();
@@ -122,12 +121,14 @@
                         std::cout<<"List: \n";
                         showMaxFlowResult();
                         break;
+                    case 6:
+                        FileCreator::generateFile(adjacencyMatrix, verticesNumber, edgesNumber);
                     default: ;
                 }
             }
-            break;
         default: ;
     }
+    std::exit(0);
 }
 
 int GraphAlgorithmsApp::getUserChoice() {
@@ -199,7 +200,8 @@ void GraphAlgorithmsApp::showMaxFlowMenu() {
         "2. Generate graph.\n"
         "3. Show graph.\n"
         "4. DFS Ford-Fulkerson algorithm\n"
-        "5. BFS Ford-Fulkerson algorithm\n";
+        "5. BFS Ford-Fulkerson algorithm\n"
+        "6. Export graph file\n";
 }
 
 void GraphAlgorithmsApp::showMSTResults() {
@@ -225,7 +227,7 @@ void GraphAlgorithmsApp::showShortestPathsResult() {
     std::cout<<"\n\n";
 }
 
-void GraphAlgorithmsApp::showMaxFlowResult() {
+void GraphAlgorithmsApp::showMaxFlowResult() const {
     std::cout<<"Maximum graph flow from "<<startVertex<<"to "<<endVertex<<": "<<maxFlow<<"\n";
     std::cout<<"Operation Time: "<<operationTime<<"\n";
     std::cout<<"\n\n";
