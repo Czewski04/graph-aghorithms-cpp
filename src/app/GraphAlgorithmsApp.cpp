@@ -6,10 +6,10 @@
 #include "FileReader.h"
 #include "MSTSolver.h"
 #include "ShortestPathSolver.h"
-#include <iomanip>
-#include <iostream>
 #include "MaximumFlowSolver.h"
 #include "GraphGenerator.h"
+#include <iomanip>
+#include <iostream>
 
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
@@ -62,7 +62,9 @@
                         showNeighboursList();
                         break;
                     case 2:
-                        ;
+                        GraphGenerator::generateGraphForShortestPathAndMaxFlow(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
+                        showAdjacencyMatrix();
+                        showNeighboursList();
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();
@@ -97,7 +99,9 @@
                         showNeighboursList();
                         break;
                     case 2:
-                        ;
+                        GraphGenerator::generateGraphForShortestPathAndMaxFlow(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
+                        showAdjacencyMatrix();
+                        showNeighboursList();
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();

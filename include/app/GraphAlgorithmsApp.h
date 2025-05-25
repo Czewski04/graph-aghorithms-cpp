@@ -44,6 +44,4 @@ private:
         static void showMaxFlowMenu();
 };
 
-
-
 #endif //GRAPHALGORITHMSAPP_H

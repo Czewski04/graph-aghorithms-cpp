@@ -1,10 +1,9 @@
 //
-// Created by Wiktor on 23.05.2025.
+// Created by Wiktor on 25.05.2025.
 //
 
-#ifndef GRAPHALGORITHMS_GRAPHGENERATOR_H
-#define GRAPHALGORITHMS_GRAPHGENERATOR_H
-
+#ifndef GRAPHGENERATOR_H
+#define GRAPHGENERATOR_H
 
 #include <tuple>
 #include "NeighbourStruct.h"
@@ -12,13 +11,10 @@
 class GraphGenerator {
 public:
     static void generateGraphForMST(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber);
-    static void generateGraphForShortestPathAndMaxFlow(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber, int& startVertice, int& endVertice);
-
+    static void generateGraphForShortestPathAndMaxFlow(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber, int& startVertex, int& endVertex);
 private:
     static std::tuple<int, int> askForGraphSize();
-
     static void addVerticeToNeighbourList(neighbour **&neighboursList, int u, int v, int w);
 };
 
-
-#endif //GRAPHALGORITHMS_GRAPHGENERATOR_H
+#endif //GRAPHGENERATOR_H

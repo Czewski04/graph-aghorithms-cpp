@@ -16,11 +16,12 @@ public:
 
 private:
     static bool dfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited);
-    static bool dfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited);
+    static bool dfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited, neighbour** pathEdges);
     static bool bfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited);
-    static bool bfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited);
+    static bool bfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited, neighbour** pathEdges);
     static void addNeighbourToList(neighbour*& neighbour, int vertex, int capacity);
     static void deleteLinkedList(neighbour* mainNeighbour);
+    static void addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity);
 };
 
 #endif //MAXIMUMFLOWSOLVER_H

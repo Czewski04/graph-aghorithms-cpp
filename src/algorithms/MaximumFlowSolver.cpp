@@ -79,7 +79,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(in
     return std::make_tuple(maxFlow, duration.count());
 }
 
-bool MaximumFlowSolver::dfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited) {
+bool MaximumFlowSolver::dfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited, neighbour** pathEdges) {
     visited[source] = true;
 
     if (source == sink)
@@ -91,7 +91,8 @@ bool MaximumFlowSolver::dfsFindPathForList(neighbour** residualGraph, int vertic
         int capacity = current->weight;
         if (!visited[v] && capacity>0) {
             parent[v] = source;
-            if (dfsFindPathForList(residualGraph, verticesNumber, v, sink, parent, visited))
+            pathEdges[v] = current;
+            if (dfsFindPathForList(residualGraph, verticesNumber, v, sink, parent, visited, pathEdges))
                 return true;
         }
         current = current->nextVertex;
@@ -103,112 +104,62 @@ bool MaximumFlowSolver::dfsFindPathForList(neighbour** residualGraph, int vertic
 std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighbour** neighboursList, int verticesNumber, int startVertex, int endVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Inicjalizacja residualGraph jako tablicy wskaźników na listy sąsiedztwa
+    // Tworzymy graf rezydualny
     neighbour** residualGraph = new neighbour*[verticesNumber];
-    for (int i = 0; i < verticesNumber; ++i) {
-        residualGraph[i] = nullptr; // Każda lista początkowo pusta
-    }
+    for (int i = 0; i < verticesNumber; ++i)
+        residualGraph[i] = nullptr;
 
-    // Kopiowanie krawędzi z neighboursList do residualGraph
-    // i dodawanie krawędzi wstecznych
+    // Dodajemy krawędzie rezydualne z odwrotnymi
     for (int u = 0; u < verticesNumber; ++u) {
-        neighbour* currentOriginal = neighboursList[u]; // Iterujemy po oryginalnej liście sąsiedztwa
+        neighbour* currentOriginal = neighboursList[u];
         while (currentOriginal != nullptr) {
             int v = currentOriginal->vertex;
-            int capacity = currentOriginal->weight; // Waga w oryginalnym grafie to przepustowość
-
-            // Dodaj krawędź w przód (u, v) do residualGraph
-            addNeighbourToList(residualGraph[u], v, capacity);
-
-            // Dodaj krawędź wsteczną (v, u) do residualGraph z przepustowością 0 (początkowo)
-            // Jest to kluczowe dla możliwości "cofania" przepływu
-            addNeighbourToList(residualGraph[v], u, 0);
-
+            int capacity = currentOriginal->weight;
+            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity);
             currentOriginal = currentOriginal->nextVertex;
         }
     }
 
     int* parent = new int[verticesNumber];
     bool* visited = new bool[verticesNumber];
+    neighbour** pathEdges = new neighbour*[verticesNumber];
 
     int maxFlow = 0;
 
-    // Dopóki istnieje ścieżka z source do sink
     while (true) {
         for (int i = 0; i < verticesNumber; i++) {
             visited[i] = false;
             parent[i] = -1;
+            pathEdges[i] = nullptr;
         }
 
-        if (!dfsFindPathForList(residualGraph, verticesNumber, startVertex, endVertex, parent, visited))
+        if (!dfsFindPathForList(residualGraph, verticesNumber, startVertex, endVertex, parent, visited, pathEdges))
             break;
 
-        // Znajdź minimalną przepustowość (bottleneck) na ścieżce
+        // Szukamy bottleneck
         int pathFlow = INT_MAX;
         for (int v = endVertex; v != startVertex; v = parent[v]) {
-            int u = parent[v];
-            int currentEdgeCapacity = 0;
-            neighbour* current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            if (currentEdgeCapacity < pathFlow)
-                pathFlow = currentEdgeCapacity;
+            if (pathEdges[v]->weight < pathFlow)
+                pathFlow = pathEdges[v]->weight;
         }
 
-        // Aktualizuj graf rezydualny
+        // Aktualizacja przepustowości
         for (int v = endVertex; v != startVertex; v = parent[v]) {
-            int u = parent[v];
-            int currentEdgeCapacity = 0;
-
-            neighbour* current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    current->weight = currentEdgeCapacity-pathFlow;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-
-            current = residualGraph[v];
-            while (current != nullptr) {
-                if (current->vertex == u) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            current = residualGraph[v];
-            while (current != nullptr) {
-                if (current->vertex == u) {
-                    current->weight = currentEdgeCapacity+pathFlow;
-                    break;
-                }
-                current = current->nextVertex;
-            }
+            neighbour* edge = pathEdges[v];
+            edge->weight -= pathFlow;
+            edge->reverseEdge->weight += pathFlow;
         }
 
         maxFlow += pathFlow;
     }
 
-    // Zwolnienie pamięci
-    for (int i = 0; i < verticesNumber; i++)
+    // Sprzątanie
+    for (int i = 0; i < verticesNumber; ++i)
         deleteLinkedList(residualGraph[i]);
     delete[] residualGraph;
     delete[] parent;
     delete[] visited;
+    delete[] pathEdges;
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration<double, std::milli>(end - start);
@@ -216,21 +167,32 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
     return std::make_tuple(maxFlow, duration.count());
 }
 
-void MaximumFlowSolver::addNeighbourToList(neighbour*& mainVertex, int vertex, int capacity) {
-    neighbour* newNeighbour = new neighbour;
-    newNeighbour->vertex = vertex;
-    newNeighbour->weight = capacity; // Waga tutaj to przepustowość rezydualna
-    newNeighbour->nextVertex = nullptr;
+bool MaximumFlowSolver::bfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited) {
+    int* queue = new int[verticesNumber];
+    int front = 0, back = 0;
 
-    if (mainVertex == nullptr) {
-        mainVertex = newNeighbour;
-    } else {
-        neighbour* current = mainVertex;
-        while (current->nextVertex != nullptr) {
-            current = current->nextVertex;
+    queue[back++] = source;
+    visited[source] = true;
+    parent[source] = -1;
+
+    while (front < back) {
+        int u = queue[front++];
+
+        for (int v = 0; v < verticesNumber; ++v) {
+            if (!visited[v] && residualGraph[u][v] > 0) {
+                queue[back++] = v;
+                parent[v] = u;
+                visited[v] = true;
+                if (v == sink) {
+                    delete[] queue;
+                    return true;
+                }
+            }
         }
-        current->nextVertex = newNeighbour;
     }
+
+    delete[] queue;
+    return false;
 }
 
 std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertex, int endVertex) {
@@ -285,147 +247,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(in
     return std::make_tuple(maxFlow, duration);
 }
 
-bool MaximumFlowSolver::bfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited) {
-    int* queue = new int[verticesNumber];
-    int front = 0, back = 0;
-
-    queue[back++] = source;
-    visited[source] = true;
-    parent[source] = -1;
-
-    while (front < back) {
-        int u = queue[front++];
-
-        for (int v = 0; v < verticesNumber; ++v) {
-            if (!visited[v] && residualGraph[u][v] > 0) {
-                queue[back++] = v;
-                parent[v] = u;
-                visited[v] = true;
-                if (v == sink) {
-                    delete[] queue;
-                    return true;
-                }
-            }
-        }
-    }
-
-    delete[] queue;
-    return false;
-}
-
-std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex, int endVertex) {
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Inicjalizacja residualGraph jako tablicy wskaźników na listy sąsiedztwa
-    neighbour** residualGraph = new neighbour*[verticesNumber];
-    for (int i = 0; i < verticesNumber; ++i) {
-        residualGraph[i] = nullptr; // Każda lista początkowo pusta
-    }
-
-    // Kopiowanie krawędzi z neighboursList do residualGraph
-    // i dodawanie krawędzi wstecznych
-    for (int u = 0; u < verticesNumber; ++u) {
-        neighbour* currentOriginal = neighboursList[u]; // Iterujemy po oryginalnej liście sąsiedztwa
-        while (currentOriginal != nullptr) {
-            int v = currentOriginal->vertex;
-            int capacity = currentOriginal->weight; // Waga w oryginalnym grafie to przepustowość
-            // Dodaj krawędź w przód (u, v) do residualGraph
-            addNeighbourToList(residualGraph[u], v, capacity);
-            // Dodaj krawędź wsteczną (v, u) do residualGraph z przepustowością 0 (początkowo)
-            // Jest to kluczowe dla możliwości "cofania" przepływu
-            addNeighbourToList(residualGraph[v], u, 0);
-            currentOriginal = currentOriginal->nextVertex;
-        }
-    }
-
-    int* parent = new int[verticesNumber];
-    bool* visited = new bool[verticesNumber];
-    int maxFlow = 0;
-
-    // Dopóki istnieje ścieżka z source do sink
-    while (true) {
-        for (int i = 0; i < verticesNumber; i++) {
-            visited[i] = false;
-            parent[i] = -1;
-        }
-
-        if (!dfsFindPathForList(residualGraph, verticesNumber, startVertex, endVertex, parent, visited))
-            break;
-
-        // Znajdź minimalną przepustowość (bottleneck) na ścieżce
-        int pathFlow = INT_MAX;
-        for (int v = endVertex; v != startVertex; v = parent[v]) {
-            int u = parent[v];
-            int currentEdgeCapacity = 0;
-            neighbour* current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            if (currentEdgeCapacity < pathFlow)
-                pathFlow = currentEdgeCapacity;
-        }
-
-        // Aktualizuj graf rezydualny
-        for (int v = endVertex; v != startVertex; v = parent[v]) {
-            int u = parent[v];
-            int currentEdgeCapacity = 0;
-
-            neighbour* current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            current = residualGraph[u];
-            while (current != nullptr) {
-                if (current->vertex == v) {
-                    current->weight = currentEdgeCapacity-pathFlow;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-
-            current = residualGraph[v];
-            while (current != nullptr) {
-                if (current->vertex == u) {
-                    currentEdgeCapacity = current->weight;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-            current = residualGraph[v];
-            while (current != nullptr) {
-                if (current->vertex == u) {
-                    current->weight = currentEdgeCapacity+pathFlow;
-                    break;
-                }
-                current = current->nextVertex;
-            }
-        }
-
-        maxFlow += pathFlow;
-    }
-
-    // Zwolnienie pamięci
-    for (int i = 0; i < verticesNumber; i++)
-        deleteLinkedList(residualGraph[i]);
-    delete[] residualGraph;
-    delete[] parent;
-    delete[] visited;
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration<double, std::milli>(end - start);
-
-    return std::make_tuple(maxFlow, duration.count());
-}
-
-bool MaximumFlowSolver::bfsFindPathForList(neighbour **residualGraph, int verticesNumber, int source, int sink, int *parent, bool *visited) {
+bool MaximumFlowSolver::bfsFindPathForList(neighbour **residualGraph, int verticesNumber, int source, int sink, int *parent, bool *visited, neighbour** pathEdges) {
     int* queue = new int[verticesNumber];
     int front = 0, back = 0;
 
@@ -444,16 +266,97 @@ bool MaximumFlowSolver::bfsFindPathForList(neighbour **residualGraph, int vertic
                 queue[back++] = v;
                 parent[v] = u;
                 visited[v] = true;
+                pathEdges[v] = current;
                 if (v == sink) {
                     delete[] queue;
                     return true;
                 }
             }
+            current = current->nextVertex;
         }
     }
 
     delete[] queue;
     return false;
+}
+
+std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex, int endVertex) {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Tworzymy graf rezydualny
+    neighbour** residualGraph = new neighbour*[verticesNumber];
+    for (int i = 0; i < verticesNumber; ++i)
+        residualGraph[i] = nullptr;
+
+    // Dodajemy krawędzie rezydualne z reverseEdge
+    for (int u = 0; u < verticesNumber; ++u) {
+        neighbour* currentOriginal = neighboursList[u];
+        while (currentOriginal != nullptr) {
+            int v = currentOriginal->vertex;
+            int capacity = currentOriginal->weight;
+            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity);
+            currentOriginal = currentOriginal->nextVertex;
+        }
+    }
+
+    int* parent = new int[verticesNumber];
+    bool* visited = new bool[verticesNumber];
+    neighbour** pathEdges = new neighbour*[verticesNumber];
+
+    int maxFlow = 0;
+
+    while (true) {
+        for (int i = 0; i < verticesNumber; i++) {
+            visited[i] = false;
+            parent[i] = -1;
+            pathEdges[i] = nullptr;
+        }
+
+        if (!bfsFindPathForList(residualGraph, verticesNumber, startVertex, endVertex, parent, visited, pathEdges))
+            break;
+
+        int pathFlow = INT_MAX;
+        for (int v = endVertex; v != startVertex; v = parent[v]) {
+            neighbour* edge = pathEdges[v];
+            if (edge->weight < pathFlow)
+                pathFlow = edge->weight;
+        }
+
+        // Aktualizacja przepływów – szybka dzięki reverseEdge
+        for (int v = endVertex; v != startVertex; v = parent[v]) {
+            neighbour* edge = pathEdges[v];
+            edge->weight -= pathFlow;
+            edge->reverseEdge->weight += pathFlow;
+        }
+
+        maxFlow += pathFlow;
+    }
+
+    for (int i = 0; i < verticesNumber; ++i)
+        deleteLinkedList(residualGraph[i]);
+    delete[] residualGraph;
+    delete[] parent;
+    delete[] visited;
+    delete[] pathEdges;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration<double, std::milli>(end - start);
+
+    return std::make_tuple(maxFlow, duration.count());
+}
+
+void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity) {
+    // Tworzymy krawędzie resztkowe w obie strony
+    neighbour* forward = new neighbour{v, capacity, headU, nullptr};
+    neighbour* backward = new neighbour{u, 0, headV, nullptr};
+
+    // Łączymy je wzajemnie
+    forward->reverseEdge = backward;
+    backward->reverseEdge = forward;
+
+    // Dodajemy do list
+    headU = forward;
+    headV = backward;
 }
 
 // Funkcja pomocnicza do zwalniania pamięci listy sąsiedztwa
