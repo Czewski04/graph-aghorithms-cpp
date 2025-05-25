@@ -12,8 +12,6 @@ void FileCreator::generateFile(int**& adjacencyMatrix, int& verticesNumber, int&
     std::ofstream file;
     std::string filename = "grafik.txt";
 
-    bool fileExists = std::filesystem::exists(filename);
-
     file.open(filename, std::ios::app);
 
     if (!file.is_open()) {

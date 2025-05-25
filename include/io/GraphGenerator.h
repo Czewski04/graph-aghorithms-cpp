@@ -14,7 +14,7 @@ public:
     static void generateGraphForShortestPathAndMaxFlow(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber, int& startVertex, int& endVertex);
 private:
     static std::tuple<int, int> askForGraphSize();
-    static void addVerticeToNeighbourList(neighbour **&neighboursList, int u, int v, int w);
+    static void removeNeighbourFromList(neighbour*& head, int targetVertex);
 };
 
 #endif //GRAPHGENERATOR_H

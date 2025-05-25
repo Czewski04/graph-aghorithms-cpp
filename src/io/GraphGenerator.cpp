@@ -6,10 +6,22 @@
 #include <chrono>
 #include <iostream>
 #include "GraphGenerator.h"
+#include "Utilities.h"
 
 void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber) {
+    for (int i = 0; i < verticesNumber; i++) {
+        Utilities::deleteLinkedList(neighboursList[i]);
+        delete[] adjacencyMatrix[i];
+    }
+    delete[] neighboursList;
+    delete[] adjacencyMatrix;
     int graphDensity = 0;
     std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    bool nearlyFull = false;
+    if(graphDensity == 99) {
+        nearlyFull=true;
+        graphDensity=100;
+    }
     int maxEdgesCount = (int)(((double)verticesNumber * (verticesNumber-1)/2.0)*(graphDensity/100.0));
     edgesNumber = maxEdgesCount;
 
@@ -32,8 +44,8 @@ void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&ne
         int w = weightDistribution(gen);
         adjacencyMatrix[u][v] = w;
         adjacencyMatrix[v][u] = w;
-        addVerticeToNeighbourList(neighboursList, u, v, w);
-        addVerticeToNeighbourList(neighboursList, v, u, w);
+        Utilities::addVertexToNeighbourList(neighboursList, u, v, w);
+        Utilities::addVertexToNeighbourList(neighboursList, v, u, w);
         maxEdgesCount--;
     }
 
@@ -48,30 +60,49 @@ void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&ne
         int w = weightDistribution(gen);
         adjacencyMatrix[u][v] = w;
         adjacencyMatrix[v][u] = w;
-        addVerticeToNeighbourList(neighboursList, u, v, w);
-        addVerticeToNeighbourList(neighboursList, v, u, w);
+        Utilities::addVertexToNeighbourList(neighboursList, u, v, w);
+        Utilities::addVertexToNeighbourList(neighboursList, v, u, w);
     }
-}
-
-void GraphGenerator::addVerticeToNeighbourList(neighbour **&neighboursList, int u, int v, int w) {
-    if (neighboursList[u] == nullptr) {
-        neighboursList[u] = new neighbour;
-        neighboursList[u]->vertex = v;
-        neighboursList[u]->weight = w;
-        neighboursList[u]->nextVertex = nullptr;
-
-    }
-    else {
-        neighbour* current = neighboursList[u];
-        while (current->nextVertex != nullptr) {
-            current = current->nextVertex;
+    if(nearlyFull){
+        int u = distVertex(gen);
+        int v = distVertex(gen);
+        while(adjacencyMatrix[u][v]==0 || u==v){
+            u = distVertex(gen);
+            v = distVertex(gen);
         }
-        current->nextVertex = new neighbour;
-        current->nextVertex->vertex = v;
-        current->nextVertex->weight = w;
-        current->nextVertex->nextVertex = nullptr;
+        adjacencyMatrix[u][v] = 0;
+        adjacencyMatrix[v][u] = 0;
+        removeNeighbourFromList(neighboursList[u], v);
+        removeNeighbourFromList(neighboursList[v], u);
+        edgesNumber--;
     }
 }
+
+void GraphGenerator::removeNeighbourFromList(neighbour*& head, int targetVertex) {
+    if (head == nullptr) return;
+
+    // Jeśli pierwszy element to cel
+    if (head->vertex == targetVertex) {
+        neighbour* temp = head;
+        head = head->nextVertex;
+        delete temp;
+        return;
+    }
+
+    // Szukanie dalej
+    neighbour* current = head;
+    while (current->nextVertex != nullptr && current->nextVertex->vertex != targetVertex) {
+        current = current->nextVertex;
+    }
+
+    // Jeśli znaleziono i można usunąć
+    if (current->nextVertex != nullptr) {
+        neighbour* temp = current->nextVertex;
+        current->nextVertex = current->nextVertex->nextVertex;
+        delete temp;
+    }
+}
+
 
 std::tuple<int, int> GraphGenerator::askForGraphSize() {
     int size = 0, density = 0;
@@ -85,9 +116,21 @@ std::tuple<int, int> GraphGenerator::askForGraphSize() {
 }
 
 void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int &startVertex, int &endVertex) {
+    for (int i = 0; i < verticesNumber; i++) {
+        Utilities::deleteLinkedList(neighboursList[i]); // <--- TUTAJ ZMIANA: Użyj funkcji do zwalniania listy
+        delete[] adjacencyMatrix[i];         // Poprawnie zwalnia wiersz macierzy
+    }
+    delete[] neighboursList; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
+    delete[] adjacencyMatrix; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
+
     startVertex = 0;
     int graphDensity = 0;
     std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    bool nearlyFull = false;
+    if(graphDensity == 99) {
+        nearlyFull=true;
+        graphDensity=100;
+    }
     int maxEdgesCount = (int)((verticesNumber * (verticesNumber-1))*(graphDensity/100.0));
     edgesNumber = maxEdgesCount;
     bool* visited = new bool[verticesNumber];
@@ -118,7 +161,7 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
             if(!visited[v]){
                 int w = weightDistribution(gen);
                 adjacencyMatrix[u][v] = w;
-                addVerticeToNeighbourList(neighboursList, u, v, w);
+                Utilities::addVertexToNeighbourList(neighboursList, u, v, w);
                 visited[v] = true;
                 mstVertices++;
                 maxEdgesCount--;
@@ -136,7 +179,18 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
         }
         int w = weightDistribution(gen);
         adjacencyMatrix[u][v] = w;
-        addVerticeToNeighbourList(neighboursList, u, v, w);
+        Utilities::addVertexToNeighbourList(neighboursList, u, v, w);
     }
     endVertex = vertexDistribution(gen);
+    if(nearlyFull){
+        int u = distVertex(gen);
+        int v = distVertex(gen);
+        while(adjacencyMatrix[u][v]==0 || u==v){
+            u = distVertex(gen);
+            v = distVertex(gen);
+        }
+        adjacencyMatrix[u][v] = 0;
+        removeNeighbourFromList(neighboursList[u], v);
+        edgesNumber--;
+    }
 }

@@ -142,7 +142,7 @@ std::tuple<Edge *, int, int, double> MSTSolver::kruskalsAlgorithmForList(neighbo
     // Przygotowanie listy krawędzi
     Edge* edges;
     int edgeCount = extractEdgesFromNeighboursList(neighboursList, verticesNumber, edges);
-    sortEdgesByWeight(edges, 0, edgeCount);
+    sortEdgesByWeight(edges, 0, edgeCount-1);
 
     // Inicjalizacja MST
     UnionFind unionFind(verticesNumber);

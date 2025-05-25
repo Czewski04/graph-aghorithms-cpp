@@ -29,6 +29,7 @@
                         GraphGenerator::generateGraphForMST(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber);
                         showAdjacencyMatrix();
                         showNeighboursList();
+                        break;
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();
@@ -65,6 +66,7 @@
                         GraphGenerator::generateGraphForShortestPathAndMaxFlow(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
                         showAdjacencyMatrix();
                         showNeighboursList();
+                        break;
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();
@@ -101,6 +103,7 @@
                         GraphGenerator::generateGraphForShortestPathAndMaxFlow(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex);
                         showAdjacencyMatrix();
                         showNeighboursList();
+                        break;
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();

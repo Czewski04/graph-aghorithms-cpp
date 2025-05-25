@@ -3,6 +3,7 @@
 //
 
 #include "../../include/algorithms/MaximumFlowSolver.h"
+#include "Utilities.h"
 #include <chrono>
 
 bool MaximumFlowSolver::dfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited) {
@@ -155,7 +156,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
 
     // Sprzątanie
     for (int i = 0; i < verticesNumber; ++i)
-        deleteLinkedList(residualGraph[i]);
+        Utilities::deleteLinkedList(residualGraph[i]);
     delete[] residualGraph;
     delete[] parent;
     delete[] visited;
@@ -333,7 +334,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
     }
 
     for (int i = 0; i < verticesNumber; ++i)
-        deleteLinkedList(residualGraph[i]);
+        Utilities::deleteLinkedList(residualGraph[i]);
     delete[] residualGraph;
     delete[] parent;
     delete[] visited;
@@ -357,14 +358,4 @@ void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, in
     // Dodajemy do list
     headU = forward;
     headV = backward;
-}
-
-// Funkcja pomocnicza do zwalniania pamięci listy sąsiedztwa
-void MaximumFlowSolver::deleteLinkedList(neighbour* mainNeighbour) {
-    neighbour* current = mainNeighbour;
-    while (current != nullptr) {
-        neighbour* next = current->nextVertex; // Zapisz wskaźnik na następny element
-        delete current; // Usuń bieżący element
-        current = next; // Przejdź do następnego
-    }
 }

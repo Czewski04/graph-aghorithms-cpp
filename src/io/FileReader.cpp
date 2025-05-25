@@ -3,6 +3,7 @@
 //
 
 #include "FileReader.h"
+#include "Utilities.h"
 
 #include <iostream>
 #include <fstream>
@@ -18,11 +19,11 @@ std::string FileReader::askForFileName() {
 
 void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int& startVertex, int& endVertex) {
     for (int i = 0; i < verticesNumber; i++) {
-        delete[] neighboursList[i];
-        delete[] adjacencyMatrix[i];
+        Utilities::deleteLinkedList(neighboursList[i]); // <--- TUTAJ ZMIANA: Użyj funkcji do zwalniania listy
+        delete[] adjacencyMatrix[i];         // Poprawnie zwalnia wiersz macierzy
     }
-    delete[] neighboursList;
-    delete[] adjacencyMatrix;
+    delete[] neighboursList; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
+    delete[] adjacencyMatrix; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
 
     std::ifstream file(askForFileName());
     if (!file) {
@@ -53,43 +54,11 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
 
         // Umieszczenie wagi na krawędzi
         adjacencyMatrix[vertex1][vertex2] = weight;
-
-        if (neighboursList[vertex1] == nullptr) {
-            neighboursList[vertex1] = new neighbour;
-            neighboursList[vertex1]->vertex = vertex2;
-            neighboursList[vertex1]->weight = weight;
-            neighboursList[vertex1]->nextVertex = nullptr;
-
-        }
-        else {
-            neighbour* current = neighboursList[vertex1];
-            while (current->nextVertex != nullptr) {
-                current = current->nextVertex;
-            }
-            current->nextVertex = new neighbour;
-            current->nextVertex->vertex = vertex2;
-            current->nextVertex->weight = weight;
-            current->nextVertex->nextVertex = nullptr;
-        }
+        Utilities::addVertexToNeighbourList(neighboursList, vertex1, vertex2, weight);
         // Drugi wierzchołek bo krawędzie nieskierowane
         if (startVertex < 0) {
             adjacencyMatrix[vertex2][vertex1] = weight;
-            if (neighboursList[vertex2] == nullptr) {
-                neighboursList[vertex2] = new neighbour;
-                neighboursList[vertex2]->vertex = vertex1;
-                neighboursList[vertex2]->weight = weight;
-                neighboursList[vertex2]->nextVertex = nullptr;
-            }
-            else {
-                neighbour* current = neighboursList[vertex2];
-                while (current->nextVertex != nullptr) {
-                    current = current->nextVertex;
-                }
-                current->nextVertex = new neighbour;
-                current->nextVertex->vertex = vertex1;
-                current->nextVertex->weight = weight;
-                current->nextVertex->nextVertex = nullptr;
-            }
+            Utilities::addVertexToNeighbourList(neighboursList, vertex2, vertex1, weight);
         }
     }
 }
