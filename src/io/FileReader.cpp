@@ -16,7 +16,7 @@ std::string FileReader::askForFileName() {
     return fileName;
 }
 
-void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int& startVertice, int& endVertice) {
+void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int& startVertex, int& endVertex) {
     for (int i = 0; i < verticesNumber; i++) {
         delete[] neighboursList[i];
         delete[] adjacencyMatrix[i];
@@ -32,7 +32,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
     std::string line;
     getline(file, line);
     std::stringstream ss(line);
-    ss >> edgesNumber >> verticesNumber >> startVertice >> endVertice;
+    ss >> edgesNumber >> verticesNumber >> startVertex >> endVertex;
     neighboursList = new neighbour*[verticesNumber];
     adjacencyMatrix = new int*[verticesNumber];
 
@@ -72,7 +72,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
             current->nextVertex->nextVertex = nullptr;
         }
         // Drugi wierzchołek bo krawędzie nieskierowane
-        if (startVertice < 0) {
+        if (startVertex < 0) {
             adjacencyMatrix[vertex2][vertex1] = weight;
             if (neighboursList[vertex2] == nullptr) {
                 neighboursList[vertex2] = new neighbour;

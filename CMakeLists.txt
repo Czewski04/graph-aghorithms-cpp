@@ -17,4 +17,5 @@ add_executable(graphAlgorithms
         src/algorithms/ShortestPathSolver.cpp
         src/data_structures/MinimumHeap.cpp
         src/data_structures/UnionFind.cpp
+        src/io/GraphGenerator.cpp
 )

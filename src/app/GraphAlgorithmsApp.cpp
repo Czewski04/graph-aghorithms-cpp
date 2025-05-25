@@ -8,8 +8,8 @@
 #include "ShortestPathSolver.h"
 #include <iomanip>
 #include <iostream>
-
-#include "../../include/algorithms/MaximumFlowSolver.h"
+#include "MaximumFlowSolver.h"
+#include "GraphGenerator.h"
 
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
@@ -25,7 +25,9 @@
                         showNeighboursList();
                         break;
                     case 2:
-                        ;
+                        GraphGenerator::generateGraphForMST(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber);
+                        showAdjacencyMatrix();
+                        showNeighboursList();
                     case 3:
                         showAdjacencyMatrix();
                         showNeighboursList();

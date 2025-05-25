@@ -12,7 +12,7 @@
 class FileReader {
 public:
     static std::string askForFileName();
-    static void readFile(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber, int& startVertice, int& endVertice);
+    static void readFile(int**& adjacencyMatrix, neighbour**& neighboursList, int& verticesNumber, int& edgesNumber, int& startVertex, int& endVertex);
 };
 
 #endif //FILEREADER_H
