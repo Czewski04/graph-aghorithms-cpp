@@ -8,15 +8,16 @@
 #include "GraphGenerator.h"
 #include "Utilities.h"
 
-void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber) {
+void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int graphSize, int graphDensity) {
     for (int i = 0; i < verticesNumber; i++) {
         Utilities::deleteLinkedList(neighboursList[i]);
         delete[] adjacencyMatrix[i];
     }
     delete[] neighboursList;
     delete[] adjacencyMatrix;
-    int graphDensity = 0;
-    std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    //int graphDensity = 0;
+   // std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    verticesNumber = graphSize;
     bool nearlyFull = false;
     if(graphDensity == 99) {
         nearlyFull=true;
@@ -64,17 +65,20 @@ void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&ne
         Utilities::addVertexToNeighbourList(neighboursList, v, u, w);
     }
     if(nearlyFull){
-        int u = distVertex(gen);
-        int v = distVertex(gen);
-        while(adjacencyMatrix[u][v]==0 || u==v){
-            u = distVertex(gen);
-            v = distVertex(gen);
+        int edgesToDelete = (int)(0.01 * edgesNumber);
+        for(;edgesToDelete>0; edgesToDelete--){
+            int u = distVertex(gen);
+            int v = distVertex(gen);
+            while(adjacencyMatrix[u][v]==0 || u==v){
+                u = distVertex(gen);
+                v = distVertex(gen);
+            }
+            adjacencyMatrix[u][v] = 0;
+            adjacencyMatrix[v][u] = 0;
+            removeNeighbourFromList(neighboursList[u], v);
+            removeNeighbourFromList(neighboursList[v], u);
+            edgesNumber--;
         }
-        adjacencyMatrix[u][v] = 0;
-        adjacencyMatrix[v][u] = 0;
-        removeNeighbourFromList(neighboursList[u], v);
-        removeNeighbourFromList(neighboursList[v], u);
-        edgesNumber--;
     }
 }
 
@@ -115,7 +119,7 @@ std::tuple<int, int> GraphGenerator::askForGraphSize() {
     return std::make_tuple(size, density);
 }
 
-void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int &startVertex, int &endVertex) {
+void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int &startVertex, int &endVertex, int graphSize, int graphDensity) {
     for (int i = 0; i < verticesNumber; i++) {
         Utilities::deleteLinkedList(neighboursList[i]); // <--- TUTAJ ZMIANA: Użyj funkcji do zwalniania listy
         delete[] adjacencyMatrix[i];         // Poprawnie zwalnia wiersz macierzy
@@ -124,8 +128,9 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
     delete[] adjacencyMatrix; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
 
     startVertex = 0;
-    int graphDensity = 0;
-    std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    //int graphDensity = 0;
+    verticesNumber = graphSize;
+    //std::tie(verticesNumber, graphDensity) = askForGraphSize();
     bool nearlyFull = false;
     if(graphDensity == 99) {
         nearlyFull=true;
@@ -183,14 +188,17 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
     }
     endVertex = vertexDistribution(gen);
     if(nearlyFull){
-        int u = distVertex(gen);
-        int v = distVertex(gen);
-        while(adjacencyMatrix[u][v]==0 || u==v){
-            u = distVertex(gen);
-            v = distVertex(gen);
+        int edgesToDelete = (int)(0.01 * edgesNumber);
+        for(;edgesToDelete>0; edgesToDelete--){
+            int u = distVertex(gen);
+            int v = distVertex(gen);
+            while(adjacencyMatrix[u][v]==0 || u==v){
+                u = distVertex(gen);
+                v = distVertex(gen);
+            }
+            adjacencyMatrix[u][v] = 0;
+            removeNeighbourFromList(neighboursList[u], v);
+            edgesNumber--;
         }
-        adjacencyMatrix[u][v] = 0;
-        removeNeighbourFromList(neighboursList[u], v);
-        edgesNumber--;
     }
 }
