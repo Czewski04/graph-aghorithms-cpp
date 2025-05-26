@@ -186,7 +186,10 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
         adjacencyMatrix[u][v] = w;
         Utilities::addVertexToNeighbourList(neighboursList, u, v, w);
     }
-    endVertex = vertexDistribution(gen);
+
+    do {
+        endVertex = vertexDistribution(gen);
+    }while (endVertex == startVertex);
     if(nearlyFull){
         int edgesToDelete = (int)(0.01 * edgesNumber);
         for(;edgesToDelete>0; edgesToDelete--){

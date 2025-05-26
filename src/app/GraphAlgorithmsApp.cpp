@@ -17,6 +17,8 @@
 #include <sstream>
 #include <vector>
 
+#include "Utilities.h"
+
 
 [[noreturn]] void GraphAlgorithmsApp::runApp() {
     showMenu();
@@ -264,7 +266,7 @@ struct BenchmarkResult {
 };
 
 void GraphAlgorithmsApp::runAllAlgorithmTests() {
-    const int runs = 25;
+    const int runs = 50;
     const std::vector<int> sizes = {80, 100, 120, 140, 170, 200, 250};
     const std::vector<int> densities = {20, 60, 99};
     BenchmarkResult bench;
@@ -280,38 +282,23 @@ void GraphAlgorithmsApp::runAllAlgorithmTests() {
 
             for (int i = 0; i < runs; ++i) {
                 std::cout<<"size: "<<size<<" , density: "<<density<<" run: "<<i<<"\n";
+
                 GraphGenerator::generateGraphForMST(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, size, density);
-
-                auto [p_list, _, __, t_prim_list] = MSTSolver::primsAlgorithmForList(neighboursList, verticesNumber);
-                auto [p_matrix, ___, ____, t_prim_matrix] = MSTSolver::primsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
-                auto [k_list, _____, ______, t_kruskal_list] = MSTSolver::kruskalsAlgorithmForList(neighboursList, verticesNumber);
-                auto [k_matrix, _______, ________, t_kruskal_matrix] = MSTSolver::kruskalsAlgorithmForMatrix(adjacencyMatrix, verticesNumber);
-
-                total_prim_list += t_prim_list;
-                total_prim_matrix += t_prim_matrix;
-                total_kruskal_list += t_kruskal_list;
-                total_kruskal_matrix += t_kruskal_matrix;
+                total_prim_list += std::get<3>(MSTSolver::primsAlgorithmForList(neighboursList, verticesNumber));
+                total_prim_matrix += std::get<3>(MSTSolver::primsAlgorithmForMatrix(adjacencyMatrix, verticesNumber));
+                total_kruskal_list += std::get<3>(MSTSolver::kruskalsAlgorithmForList(neighboursList, verticesNumber));
+                total_kruskal_matrix += std::get<3>(MSTSolver::kruskalsAlgorithmForMatrix(adjacencyMatrix, verticesNumber));
 
                 GraphGenerator::generateGraphForShortestPathAndMaxFlow(adjacencyMatrix, neighboursList, verticesNumber, edgesNumber, startVertex, endVertex, size, density);
 
-                auto [___7, ___8, t_dijkstra_list] = ShortestPathSolver::dijkstrasAlgorithmForList(neighboursList, verticesNumber, startVertex);
-                auto [___1, ___2, t_dijkstra_matrix] = ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
-                auto [___3, ___4, t_bellman_list] = ShortestPathSolver::bellmanFordAlgorithmForList(neighboursList, verticesNumber, startVertex);
-                auto [___5, ___6, t_bellman_matrix] = ShortestPathSolver::bellmanFordAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex);
-                auto [fdfs_matrix, t_ffdfs_matrix] = MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
-                auto [fdfs_list, t_ffdfs_list] = MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
-                auto [ffbfs_matrix, t_ffbfs_matrix] = MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex);
-                auto [ffbfs_list, t_ffbfs_list] = MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex);
-
-                total_dijkstra_list += t_dijkstra_list;
-                total_dijkstra_matrix += t_dijkstra_matrix;
-                total_bellman_list += t_bellman_list;
-                total_bellman_matrix += t_bellman_matrix;
-                total_ffdfs_list += t_ffdfs_list;
-                total_ffdfs_matrix += t_ffdfs_matrix;
-                total_ffbfs_list += t_ffbfs_list;
-                total_ffbfs_matrix += t_ffbfs_matrix;
-
+                total_dijkstra_list += std::get<2>(ShortestPathSolver::dijkstrasAlgorithmForList(neighboursList, verticesNumber, startVertex));
+                total_dijkstra_matrix += std::get<2>(ShortestPathSolver::dijkstrasAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex));
+                total_bellman_list += std::get<2>(ShortestPathSolver::bellmanFordAlgorithmForList(neighboursList, verticesNumber, startVertex));
+                total_bellman_matrix += std::get<2>(ShortestPathSolver::bellmanFordAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex));
+                total_ffdfs_matrix += std::get<1>(MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex));
+                total_ffdfs_list += std::get<1>(MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex));
+                total_ffbfs_matrix += std::get<1>(MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(adjacencyMatrix, verticesNumber, startVertex, endVertex));
+                total_ffbfs_list += std::get<1>(MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighboursList, verticesNumber, startVertex, endVertex));
             }
 
             bench.add("prim_list", size, density, total_prim_list / runs);
