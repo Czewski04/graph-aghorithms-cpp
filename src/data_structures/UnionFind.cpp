@@ -2,7 +2,7 @@
 // Created by wiktor on 13.05.2025.
 //
 
-#include "../../include/data_structures/UnionFind.h"
+#include "UnionFind.h"
 
 UnionFind::UnionFind(int n) {
     size = n;               // liczba elementów w zbiorach (liczba wierzchołków)
@@ -21,7 +21,7 @@ UnionFind::~UnionFind() {
     delete[] rank;
 }
 
-// Znalezienie korzenia drzewa do którego należy dany wierzchołek poprzez rekurencję
+// Znalezienie korzenia drzewa, do którego należy dany wierzchołek poprzez rekurencję
 int UnionFind::find(int v) {
     if (parent[v] != v) {
         parent[v] = find(parent[v]);

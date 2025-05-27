@@ -5,8 +5,6 @@
 #ifndef DISJOINTSET_H
 #define DISJOINTSET_H
 
-
-
 class UnionFind {
 private:
     int* parent;
@@ -14,7 +12,7 @@ private:
     int size;
 
 public:
-    UnionFind(int n);
+    explicit UnionFind(int n);
     ~UnionFind();
 
     int find(int v);

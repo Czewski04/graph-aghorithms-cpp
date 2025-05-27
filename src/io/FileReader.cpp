@@ -18,18 +18,21 @@ std::string FileReader::askForFileName() {
 }
 
 void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int& startVertex, int& endVertex) {
+    // Sprzątanie
     for (int i = 0; i < verticesNumber; i++) {
-        Utilities::deleteLinkedList(neighboursList[i]); // <--- TUTAJ ZMIANA: Użyj funkcji do zwalniania listy
-        delete[] adjacencyMatrix[i];         // Poprawnie zwalnia wiersz macierzy
+        Utilities::deleteLinkedList(neighboursList[i]);
+        delete[] adjacencyMatrix[i];
     }
-    delete[] neighboursList; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
-    delete[] adjacencyMatrix; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
+    delete[] neighboursList;
+    delete[] adjacencyMatrix;
 
+    // Zapytanie o nazwę pliku
     std::ifstream file(askForFileName());
     if (!file) {
         std::cout << "File cannot be opened\n";
     }
 
+    // Wczytanie pierwszej linii
     std::string line;
     getline(file, line);
     std::stringstream ss(line);
@@ -46,6 +49,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
         neighboursList[i] = nullptr;
     }
 
+    // Dodanie wszystkich wierzchołków
     for(int i=0; i<edgesNumber; i++){
         int vertex1, vertex2, weight;
         getline(file, line);
@@ -55,7 +59,7 @@ void FileReader::readFile(int **&adjacencyMatrix, neighbour **&neighboursList, i
         // Umieszczenie wagi na krawędzi
         adjacencyMatrix[vertex1][vertex2] = weight;
         Utilities::addVertexToNeighbourList(neighboursList, vertex1, vertex2, weight);
-        // Drugi wierzchołek bo krawędzie nieskierowane
+        // Drugi wierzchołek, bo krawędzie nieskierowane
         if (startVertex < 0) {
             adjacencyMatrix[vertex2][vertex1] = weight;
             Utilities::addVertexToNeighbourList(neighboursList, vertex2, vertex1, weight);

@@ -19,7 +19,7 @@ private:
     void swapNodes(int i, int j);
 
 public:
-    MinimumHeap(int capacity);
+    explicit MinimumHeap(int capacity);
     ~MinimumHeap();
 
     bool isEmpty() const;

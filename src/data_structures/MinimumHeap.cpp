@@ -30,26 +30,26 @@ MinimumHeap::~MinimumHeap() {
     delete[] position;
 }
 
-// Przypwracanie własności kopca
+// Przywracanie własności kopca
 void MinimumHeap::heapifyDown(int index) {
     // Obliczenie indeksów dzieci
     int smallest = index;
     int left = 2 * index + 1;
     int right = 2 * index + 2;
 
-    // Znajdowanie najmiejszego elementu z trójki (rodzic, dzieci)
+    // Znajdowanie najmniejszego elementu z trójki (rodzic, dzieci)
     if (left < size && heapArray[left].key < heapArray[smallest].key)
         smallest = left;
     if (right < size && heapArray[right].key < heapArray[smallest].key)
         smallest = right;
 
-    // Zamiana węzłów jeśli dzicko < od rodzica
+    // Zamiana węzłów, jeśli dziecko < od rodzica
     if (smallest != index) {
         swapNodes(smallest, index);
         heapifyDown(smallest);
     }
 }
-// Podniesienie elementu w górę kopca jeśli ma mniejszą wagę niż rodzic
+// Podniesienie elementu w górę kopca, jeśli ma mniejszą wagę niż rodzic
 void MinimumHeap::heapifyUp(int index) {
     while (index && heapArray[index].key < heapArray[(index - 1) / 2].key) {
         swapNodes(index, (index - 1) / 2);
@@ -72,7 +72,7 @@ void MinimumHeap::decreaseKey(int v, int key) {
     heapifyUp(i);
 }
 
-// Wyciągnięcie najmiejeszego elementu z kopca
+// Wyciągnięcie najmniejszego elementu z kopca
 MinimumHeapNode MinimumHeap::extractMin() {
     if (size == 0)
         return {-1, -1};

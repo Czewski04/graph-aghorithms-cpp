@@ -5,7 +5,7 @@
 #ifndef MAXIMUMFLOWSOLVER_H
 #define MAXIMUMFLOWSOLVER_H
 #include <tuple>
-#include "../data_structures/NeighbourStruct.h"
+#include "NeighbourStruct.h"
 
 class MaximumFlowSolver {
 public:

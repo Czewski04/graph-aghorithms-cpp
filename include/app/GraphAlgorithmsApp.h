@@ -43,7 +43,7 @@ private:
         static void showShortestPathMenu();
         static void showMaxFlowMenu();
 
-        void runAllAlgorithmTests();
+        //void runAllAlgorithmTests();
 };
 
 #endif //GRAPHALGORITHMSAPP_H

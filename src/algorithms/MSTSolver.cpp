@@ -224,11 +224,11 @@ int MSTSolver::extractEdgesFromNeighboursList(neighbour** neighboursList, int ve
     }
 
 
-    //alokacja tablicy krawędzi
+    // Alokacja tablicy krawędzi
     edgesOut = new Edge[estimatedEdges];
     int edgeIndex = 0;
 
-
+    // Przepisanie krawędzi
     for (int u = 0; u < verticesNumber; u++) {
         neighbour* current = neighboursList[u];
         while (current!=nullptr) {
@@ -258,11 +258,11 @@ int MSTSolver::extractEdgesFromMatrix(int** adjacencyMatrix, int verticesNumber,
         }
     }
 
-    //alokacja tablicy krawędzi
+    // Alokacja tablicy krawędzi
     edgesOut = new Edge[estimatedEdges];
     int edgeIndex = 0;
 
-    //umieszczenie krawędzi na liście
+    // Przepisanie krawędzi
     for (int u = 0; u < verticesNumber; u++) {
         for (int v = u + 1; v < verticesNumber; v++) {
             if (adjacencyMatrix[u][v] > 0) {
@@ -275,7 +275,7 @@ int MSTSolver::extractEdgesFromMatrix(int** adjacencyMatrix, int verticesNumber,
     return estimatedEdges;
 }
 
-//funkcja sortująca listę krawędzi wg wagi krawędzi
+// Funkcja sortująca listę krawędzi wg wagi krawędzi (quick sort)
 void MSTSolver::sortEdgesByWeight(Edge* edges, int begin, int end) {
     if (begin >= end) return;
 

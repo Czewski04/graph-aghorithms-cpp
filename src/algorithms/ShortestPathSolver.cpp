@@ -6,25 +6,29 @@
 #include "MinimumHeap.h"
 #include <chrono>
 
+// Algorytm Dijkstry dla macierzy sąsiedztwa
 std::tuple<neighbour**, int*, double> ShortestPathSolver::dijkstrasAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    int* distance = new int[verticesNumber];            // Koszty dojścia do każdego wierzchołka
-    int* parent = new int[verticesNumber];              // Rodzic danego wierzchołka w najkrótszej ścieżce
-    auto** paths = new neighbour*[verticesNumber];      // Tablica list sąsiedztwa jako ścieżki
+    int* distance = new int[verticesNumber];            // Tablica kosztów dojścia do każdego wierzchołka
+    int* parent = new int[verticesNumber];              // Tablica rodziców danego wierzchołka w najkrótszej ścieżce
+    auto** paths = new neighbour*[verticesNumber];      // Tablica ścierzek
 
+    // Inicjalizacja tablic
     for (int i = 0; i < verticesNumber; ++i) {
         distance[i] = INT_MAX;
         parent[i] = -1;
         paths[i] = nullptr;
     }
 
+    // Dodanie do kopca początkowego wierzchołka
     MinimumHeap heap(verticesNumber);
     distance[startVertex] = 0;
     heap.decreaseKey(startVertex, 0);
 
+    // Pętla wykonująca się dopóki kolejka nie będzie pusta
     while (!heap.isEmpty()) {
-        MinimumHeapNode minNode = heap.extractMin();
+        MinimumHeapNode minNode = heap.extractMin();    // Pobranie najlżejszego wierzchołka
         int u = minNode.vertex;
 
         for (int v = 0; v < verticesNumber; v++) {
@@ -38,6 +42,7 @@ std::tuple<neighbour**, int*, double> ShortestPathSolver::dijkstrasAlgorithmForM
         }
     }
 
+    // Zbudowanie wyjściowej listy znalezionych ścieżek
     buildPathsList(verticesNumber, parent, paths);
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -46,25 +51,29 @@ std::tuple<neighbour**, int*, double> ShortestPathSolver::dijkstrasAlgorithmForM
     return std::make_tuple(paths, distance, duration.count());
 }
 
+// Algorytm Dijkstry dla listy sąsiedztwa
 std::tuple<neighbour **, int *, double> ShortestPathSolver::dijkstrasAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    int* distance = new int[verticesNumber];            // Koszty dojścia do każdego wierzchołka
-    int* parent = new int[verticesNumber];              // Rodzic danego wierzchołka w najkrótszej ścieżce
-    auto** paths = new neighbour*[verticesNumber];      // Tablica list sąsiedztwa jako ścieżki
+    int* distance = new int[verticesNumber];            // Tablica kosztów dojścia do każdego wierzchołka
+    int* parent = new int[verticesNumber];              // Tablica rodziców danego wierzchołka w najkrótszej ścieżce
+    auto** paths = new neighbour*[verticesNumber];      // Tablica ścierzek
 
+    // Inicjalizacja tablic
     for (int i = 0; i < verticesNumber; ++i) {
         distance[i] = INT_MAX;
         parent[i] = -1;
         paths[i] = nullptr;
     }
 
+    // Dodanie do kopca początkowego wierzchołka
     MinimumHeap heap(verticesNumber);
     distance[startVertex] = 0;
     heap.decreaseKey(startVertex, 0);
 
+    // Pętla wykonująca się dopóki kolejka nie będzie pusta
     while (!heap.isEmpty()) {
-        MinimumHeapNode minNode = heap.extractMin();
+        MinimumHeapNode minNode = heap.extractMin();    // Pobranie najlżejszego wierzchołka
         int u = minNode.vertex;
 
         neighbour* current = neighboursList[u];
@@ -81,6 +90,7 @@ std::tuple<neighbour **, int *, double> ShortestPathSolver::dijkstrasAlgorithmFo
         }
     }
 
+    // Zbudowanie wyjściowej listy znalezionych ścieżek
     buildPathsList(verticesNumber, parent, paths);
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -89,19 +99,22 @@ std::tuple<neighbour **, int *, double> ShortestPathSolver::dijkstrasAlgorithmFo
     return std::make_tuple(paths, distance, duration.count());
 }
 
+// Algorytm Bellmana-Forda dla macierzy sąsiedztwa
 std::tuple<neighbour**, int*, double> ShortestPathSolver::bellmanFordAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    int* distance = new int[verticesNumber];
-    int* parent = new int[verticesNumber];
-    neighbour** paths = new neighbour*[verticesNumber];
+    int* distance = new int[verticesNumber];            // Tablica kosztów dojścia do każdego wierzchołka
+    int* parent = new int[verticesNumber];              // Tablica rodziców danego wierzchołka w najkrótszej ścieżce
+    auto** paths = new neighbour*[verticesNumber];      // Tablica ścierzek
 
+    // Inicjalizacja tablic
     for (int i = 0; i < verticesNumber; ++i) {
         distance[i] = INT_MAX;
         parent[i] = -1;
         paths[i] = nullptr;
     }
 
+    // Aktualizacja wagi początkowego wierzchołka
     distance[startVertex] = 0;
 
     // Sprawdzenie wierzchołków V-1 razy
@@ -122,19 +135,20 @@ std::tuple<neighbour**, int*, double> ShortestPathSolver::bellmanFordAlgorithmFo
     for (int u = 0; u < verticesNumber; ++u) {
         for (int v = 0; v < verticesNumber; ++v) {
             int weight = adjacencyMatrix[u][v];
+            // Wykrywanie ujemnego cyklu
             if (weight > 0 && distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
-                // Wykryto cykl ujemny — tu możesz obsłużyć wyjątek lub komunikat
                 delete[] distance;
                 delete[] parent;
                 for (int i = 0; i < verticesNumber; ++i) {
                     delete[] paths[i];
                 }
                 delete[] paths;
-                return std::make_tuple(nullptr, nullptr, -1.0); // Sygnał błędu
+                return std::make_tuple(nullptr, nullptr, -1.0);     // Zwrócenie błędu gdy wystąpi cykl ujemny
             }
         }
     }
 
+    // Zbudowanie wyjściowej listy znalezionych ścieżek
     buildPathsList(verticesNumber, parent, paths);
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -143,19 +157,22 @@ std::tuple<neighbour**, int*, double> ShortestPathSolver::bellmanFordAlgorithmFo
     return std::make_tuple(paths, distance, duration.count());
 }
 
+// Algorytm Bellmana-Forda dla listy sąsiedztwa
 std::tuple<neighbour **, int *, double> ShortestPathSolver::bellmanFordAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    int* distance = new int[verticesNumber];
-    int* parent = new int[verticesNumber];
-    neighbour** paths = new neighbour*[verticesNumber];
+    int* distance = new int[verticesNumber];            // Tablica kosztów dojścia do każdego wierzchołka
+    int* parent = new int[verticesNumber];              // Tablica rodziców danego wierzchołka w najkrótszej ścieżce
+    auto** paths = new neighbour*[verticesNumber];      // Tablica ścierzek
 
+    // Inicjalizacja tablic
     for (int i = 0; i < verticesNumber; ++i) {
         distance[i] = INT_MAX;
         parent[i] = -1;
         paths[i] = nullptr;
     }
 
+    // Aktualizacja wagi początkowego wierzchołka
     distance[startVertex] = 0;
 
     // Sprawdzenie wierzchołków V-1 razy
@@ -182,7 +199,7 @@ std::tuple<neighbour **, int *, double> ShortestPathSolver::bellmanFordAlgorithm
             while (current != nullptr) {
                 int v = current->vertex;
                 int weight = current->weight;
-                // Relaksacja
+                // Wykrywanie ujemnego cyklu
                 if (weight > 0 && distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
                     delete[] distance;
                     delete[] parent;
@@ -190,13 +207,14 @@ std::tuple<neighbour **, int *, double> ShortestPathSolver::bellmanFordAlgorithm
                         delete[] paths[i];
                     }
                     delete[] paths;
-                    return std::make_tuple(nullptr, nullptr, -1.0);
+                    return std::make_tuple(nullptr, nullptr, -1.0);     // Zwrócenie błędu gdy wystąpi cykl ujemny
                 }
                 current = current->nextVertex;
             }
         }
     }
 
+    // Zbudowanie wyjściowej listy znalezionych ścieżek
     buildPathsList(verticesNumber, parent, paths);
 
     auto end = std::chrono::high_resolution_clock::now();

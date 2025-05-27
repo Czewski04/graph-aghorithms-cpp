@@ -8,16 +8,15 @@
 #include "GraphGenerator.h"
 #include "Utilities.h"
 
-void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int graphSize, int graphDensity) {
+void GraphGenerator::generateGraphForMST(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber) {
     for (int i = 0; i < verticesNumber; i++) {
         Utilities::deleteLinkedList(neighboursList[i]);
         delete[] adjacencyMatrix[i];
     }
     delete[] neighboursList;
     delete[] adjacencyMatrix;
-    //int graphDensity = 0;
-   // std::tie(verticesNumber, graphDensity) = askForGraphSize();
-    verticesNumber = graphSize;
+    int graphDensity = 0;
+    std::tie(verticesNumber, graphDensity) = askForGraphSize();
     bool nearlyFull = false;
     if(graphDensity == 99) {
         nearlyFull=true;
@@ -119,7 +118,7 @@ std::tuple<int, int> GraphGenerator::askForGraphSize() {
     return std::make_tuple(size, density);
 }
 
-void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int &startVertex, int &endVertex, int graphSize, int graphDensity) {
+void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatrix, neighbour **&neighboursList, int &verticesNumber, int &edgesNumber, int &startVertex, int &endVertex) {
     for (int i = 0; i < verticesNumber; i++) {
         Utilities::deleteLinkedList(neighboursList[i]); // <--- TUTAJ ZMIANA: Użyj funkcji do zwalniania listy
         delete[] adjacencyMatrix[i];         // Poprawnie zwalnia wiersz macierzy
@@ -128,9 +127,8 @@ void GraphGenerator::generateGraphForShortestPathAndMaxFlow(int **&adjacencyMatr
     delete[] adjacencyMatrix; // Zwalnia tablicę wskaźników (pierwszy poziom alokacji)
 
     startVertex = 0;
-    //int graphDensity = 0;
-    verticesNumber = graphSize;
-    //std::tie(verticesNumber, graphDensity) = askForGraphSize();
+    int graphDensity = 0;
+    std::tie(verticesNumber, graphDensity) = askForGraphSize();
     bool nearlyFull = false;
     if(graphDensity == 99) {
         nearlyFull=true;
