@@ -251,10 +251,10 @@ void GraphAlgorithmsApp::showFlowMatrix(int** residualGraph) {
     for (int i = 0; i < verticesNumber; i++) {
         for (int j = 0; j < verticesNumber; j++) {
             if (adjacencyMatrix[i][j] > 0) {
-                int net_flow_on_edge = adjacencyMatrix[i][j] - residualGraph[i][j];
-                if (net_flow_on_edge > 0){
-                    std::cout << i << " -> " << j << " | flow: " << net_flow_on_edge<< " / " << adjacencyMatrix[i][j] << "\n";
-                    totalFlow += net_flow_on_edge;
+                int residualCapacity = adjacencyMatrix[i][j] - residualGraph[i][j];
+                if (residualCapacity > 0){
+                    std::cout << i << " -> " << j << " | flow: " << residualCapacity << " / " << adjacencyMatrix[i][j] << "\n";
+                    totalFlow += residualCapacity;
                 }
             }
         }
@@ -263,50 +263,42 @@ void GraphAlgorithmsApp::showFlowMatrix(int** residualGraph) {
 }
 
 void GraphAlgorithmsApp::showFlowList(neighbour** residualGraph) {
-    int current_total_flow = 0;
+    int totalFlow = 0;
     int totalCapacity = 0;
 
-    // Obliczenie totalCapacity na podstawie oryginalnej neighboursList
     for (int u = 0; u < verticesNumber; u++) {
-        neighbour *currentOriginal = neighboursList[u];
+        neighbour* currentOriginal = neighboursList[u];
         while (currentOriginal != nullptr) {
             totalCapacity += currentOriginal->weight;
             currentOriginal = currentOriginal->nextVertex;
         }
     }
 
-    std::cout << "Flow on edges (using list with R[j][i] logic):\n"; // Dodano opis dla jasności
+    std::cout << "Flow on edges (List - Corrected Logic):\n";
 
     for (int i = 0; i < verticesNumber; i++) {
-        neighbour *original_edge_iterator = neighboursList[i]; // Iterujemy po oryginalnych krawędziach z 'i'
-        while (original_edge_iterator != nullptr) {
-            int j_target_original = original_edge_iterator->vertex;    // Cel oryginalnej krawędzi i->j
-            int original_capacity_ij = original_edge_iterator->weight; // C(i,j)
+        neighbour* originalU = neighboursList[i];
+        while (originalU != nullptr) {
+            int originalV = originalU->vertex;
+            int originalCapacity = originalU->weight;
 
-            if (original_capacity_ij > 0) { // Rozważamy tylko rzeczywiste oryginalne krawędzie
-                // Potrzebujemy R(i,j) z finalResidualGraphList
-                int residual_capacity_ij = 0;
-                neighbour *current_edge = residualGraph[i];
-                while (current_edge != nullptr) {
-                    if (current_edge->vertex == j_target_original) {
-                        residual_capacity_ij = current_edge->weight;
+            if (originalCapacity > 0) {
+                if (originalU->correspondingResidualForwardEdge != nullptr) {
+                    int residualCapacity = originalU->correspondingResidualForwardEdge->weight;
+                    int realFlow = originalCapacity - residualCapacity;
+
+                    if (realFlow > 0) {
+                        std::cout << i << " -> " << originalV << " | flow: " << realFlow << " / " << originalCapacity << "\n";
+                        totalFlow += realFlow;
                     }
-                    current_edge = current_edge->nextVertex;
-                }
-
-                int net_flow_ij = original_capacity_ij - residual_capacity_ij;
-
-                if (net_flow_ij > 0) { // Wyświetlaj tylko, jeśli przepływ netto jest dodatni
-                    std::cout << i << " -> " << j_target_original << " | flow: " << net_flow_ij
-                              << " / " << original_capacity_ij << "\n";
-                    current_total_flow += net_flow_ij;
                 }
             }
-            original_edge_iterator = original_edge_iterator->nextVertex;
+            originalU = originalU->nextVertex;
         }
     }
-    std::cout << "volume: " << current_total_flow << " / " << totalCapacity << "\n";
+    std::cout << "volume: " << totalFlow << " / " << totalCapacity << "\n";
 }
+
 // struct BenchmarkResult {
 //     std::map<std::string, double> results;
 //

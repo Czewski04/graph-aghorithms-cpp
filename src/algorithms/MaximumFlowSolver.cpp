@@ -129,7 +129,7 @@ std::tuple<int, double, neighbour**> MaximumFlowSolver::fordFulkersonDfsAlgorith
         while (currentOriginal != nullptr) {
             int v = currentOriginal->vertex;
             int capacity = currentOriginal->weight;
-            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity);
+            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity, currentOriginal);
             currentOriginal = currentOriginal->nextVertex;
         }
     }
@@ -332,7 +332,7 @@ std::tuple<int, double, neighbour**> MaximumFlowSolver::fordFulkersonBfsAlgorith
         while (currentOriginal != nullptr) {
             int v = currentOriginal->vertex;
             int capacity = currentOriginal->weight;
-            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity);
+            addResidualEdge(residualGraph[u], residualGraph[v], u, v, capacity, currentOriginal);
             currentOriginal = currentOriginal->nextVertex;
         }
     }
@@ -386,10 +386,10 @@ std::tuple<int, double, neighbour**> MaximumFlowSolver::fordFulkersonBfsAlgorith
 }
 
 // Metoda dodająca krawędzie do grafu rezydualnego
-void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity) {
+void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity, neighbour* originalEdgeLink) {
     // Utworzenie krawędzi rezydualnych w obie strony
-    auto* forward = new neighbour{v, capacity, headU, nullptr};
-    auto* backward = new neighbour{u, 0, headV, nullptr};
+    auto* forward = new neighbour{v, capacity, headU, nullptr, nullptr};
+    auto* backward = new neighbour{u, 0, headV, nullptr, nullptr};
 
     // Łączenie krawędzi
     forward->reverseEdge = backward;
@@ -398,4 +398,9 @@ void MaximumFlowSolver::addResidualEdge(neighbour*& headU, neighbour*& headV, in
     // Dodanie do listy
     headU = forward;
     headV = backward;
+
+    // Powiązanie z oryginalną krawędzią
+    if (originalEdgeLink != nullptr) {
+        originalEdgeLink->correspondingResidualForwardEdge = forward;
+    }
 }

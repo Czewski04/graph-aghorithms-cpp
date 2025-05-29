@@ -19,7 +19,7 @@ private:
     static bool dfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited, neighbour** pathEdges);
     static bool bfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited);
     static bool bfsFindPathForList(neighbour** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited, neighbour** pathEdges);
-    static void addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity);
+    static void addResidualEdge(neighbour*& headU, neighbour*& headV, int u, int v, int capacity, neighbour* originalEdgeLink);
 };
 
 #endif //MAXIMUMFLOWSOLVER_H

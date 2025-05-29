@@ -10,5 +10,6 @@ struct neighbour {
     int weight;
     neighbour* nextVertex;
     neighbour* reverseEdge;
+    neighbour* correspondingResidualForwardEdge;
 };
 #endif //NEIGHBOURSTRUCT_H
