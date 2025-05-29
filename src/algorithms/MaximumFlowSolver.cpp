@@ -5,6 +5,7 @@
 #include "MaximumFlowSolver.h"
 #include "Utilities.h"
 #include <chrono>
+#include <iostream>
 
 // Algorytm DFS dla macierzy sąsiedztwa
 bool MaximumFlowSolver::dfsFindPathForMatrix(int** residualGraph, int verticesNumber, int source, int sink, int* parent, bool* visited) {
@@ -29,7 +30,7 @@ bool MaximumFlowSolver::dfsFindPathForMatrix(int** residualGraph, int verticesNu
 }
 
 // Algorytm Forda-Fulkersona DFS dla macierzy sąsiedztwa
-std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(int **adjacencyMatrix, int verticesNumber, int startVertex, int endVertex) {
+std::tuple<int, double, int**> MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(int **adjacencyMatrix, int verticesNumber, int startVertex, int endVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Utworzenie grafu rezydualnego
@@ -77,16 +78,13 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForMatrix(in
     }
 
     // Zwolnienie pamięci po wszystkich operacjach
-    for (int i = 0; i < verticesNumber; i++)
-        delete[] residualGraph[i];
-    delete[] residualGraph;
     delete[] parent;
     delete[] visited;
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration<double, std::milli>(end - start);
 
-    return std::make_tuple(maxFlow, duration.count());
+    return std::make_tuple(maxFlow, duration.count(), residualGraph);
 }
 
 // Algorytm DFS dla listy sąsiedztwa
@@ -117,7 +115,7 @@ bool MaximumFlowSolver::dfsFindPathForList(neighbour** residualGraph, int vertic
 }
 
 // Algorytm Forda-Fulkersona DFS dla listy sąsiedztwa
-std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighbour** neighboursList, int verticesNumber, int startVertex, int endVertex) {
+std::tuple<int, double, neighbour**> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neighbour** neighboursList, int verticesNumber, int startVertex, int endVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Utworzenie grafu rezydualnego
@@ -135,7 +133,6 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
             currentOriginal = currentOriginal->nextVertex;
         }
     }
-
     int* parent = new int[verticesNumber];              // Tablica rodziców obrazująca ścieżkę
     bool* visited = new bool[verticesNumber];           // Tablica odwiedzonych wierzchołków
     auto** pathEdges = new neighbour*[verticesNumber];  // Tablica wskaźników zapamiętująca wskaźniki na wierzchołki na ścieżce
@@ -171,10 +168,6 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
         maxFlow += pathFlow;
     }
 
-    // Sprzątanie
-    for (int i = 0; i < verticesNumber; ++i)
-        Utilities::deleteLinkedList(residualGraph[i]);
-    delete[] residualGraph;
     delete[] parent;
     delete[] visited;
     delete[] pathEdges;
@@ -182,7 +175,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonDfsAlgorithmForList(neig
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration<double, std::milli>(end - start);
 
-    return std::make_tuple(maxFlow, duration.count());
+    return std::make_tuple(maxFlow, duration.count(), residualGraph);
 }
 
 // Algorytm BFS dla macierzy sąsiedztwa
@@ -224,7 +217,7 @@ bool MaximumFlowSolver::bfsFindPathForMatrix(int** residualGraph, int verticesNu
 }
 
 // Algorytm Forda-Fulkersona BFS dla macierzy sąsiedztwa
-std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertex, int endVertex) {
+std::tuple<int, double, int**> MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(int** adjacencyMatrix, int verticesNumber, int startVertex, int endVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Utworzenie grafu rezydualnego
@@ -272,17 +265,13 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForMatrix(in
         maxFlow += pathFlow;
     }
 
-    // Zwolnienie pamięci po wszystkich operacjach
-    for (int i = 0; i < verticesNumber; ++i)
-        delete[] residualGraph[i];
-    delete[] residualGraph;
     delete[] parent;
     delete[] visited;
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration<double, std::milli>(end - start).count();
 
-    return std::make_tuple(maxFlow, duration);
+    return std::make_tuple(maxFlow, duration, residualGraph);
 }
 
 // Algorytm BFS dla listy sąsiedztwa
@@ -329,7 +318,7 @@ bool MaximumFlowSolver::bfsFindPathForList(neighbour **residualGraph, int vertic
 }
 
 // Algorytm Forda-Fulkersona BFS dla listy sąsiedztwa
-std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex, int endVertex) {
+std::tuple<int, double, neighbour**> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neighbour **neighboursList, int verticesNumber, int startVertex, int endVertex) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // Utworzenie grafu rezydualnego
@@ -379,16 +368,13 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
             neighbour* edge = pathEdges[v];
             edge->weight -= pathFlow;
             edge->reverseEdge->weight += pathFlow;
+            int u = parent[v];
         }
 
         // Dodanie przepływu do maksymalnego
         maxFlow += pathFlow;
     }
 
-    // Sprzątanie
-    for (int i = 0; i < verticesNumber; ++i)
-        Utilities::deleteLinkedList(residualGraph[i]);
-    delete[] residualGraph;
     delete[] parent;
     delete[] visited;
     delete[] pathEdges;
@@ -396,7 +382,7 @@ std::tuple<int, double> MaximumFlowSolver::fordFulkersonBfsAlgorithmForList(neig
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration<double, std::milli>(end - start);
 
-    return std::make_tuple(maxFlow, duration.count());
+    return std::make_tuple(maxFlow, duration.count(), residualGraph);
 }
 
 // Metoda dodająca krawędzie do grafu rezydualnego

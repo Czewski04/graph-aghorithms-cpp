@@ -43,6 +43,9 @@ private:
         static void showShortestPathMenu();
         static void showMaxFlowMenu();
 
+        void showFlowMatrix(int** residualGraph);
+        void showFlowList(neighbour** residualGraph);
+
         //void runAllAlgorithmTests();
 };
 
